@@ -16,16 +16,15 @@
 
 package org.springframework.beans.factory.xml;
 
-import java.io.IOException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.xml.sax.EntityResolver;
-import org.xml.sax.InputSource;
-
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.lang.Nullable;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
+
+import java.io.IOException;
 
 /**
  * EntityResolver implementation for the Spring beans DTD,
@@ -41,6 +40,7 @@ import org.springframework.lang.Nullable;
  * @since 04.06.2003
  * @see ResourceEntityResolver
  */
+// 从类路径中读取.dtd文件
 public class BeansDtdResolver implements EntityResolver {
 
 	private static final String DTD_EXTENSION = ".dtd";

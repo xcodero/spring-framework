@@ -16,14 +16,10 @@
 
 package org.springframework.util.xml;
 
-import java.io.BufferedReader;
-import java.io.CharConversionException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
+
+import java.io.*;
 
 /**
  * Detects whether an XML stream is using DTD- or XSD-based validation.
@@ -34,6 +30,7 @@ import org.springframework.util.StringUtils;
  */
 public class XmlValidationModeDetector {
 
+	// 一共4种验证模式：不验证、不确定（调用者自己确定）、DTD、XSD
 	/**
 	 * Indicates that the validation should be disabled.
 	 */
@@ -87,6 +84,7 @@ public class XmlValidationModeDetector {
 	 * @see #VALIDATION_DTD
 	 * @see #VALIDATION_XSD
 	 */
+	// 从"输入流->读取器"中一行一行读取，确定验证模式
 	public int detectValidationMode(InputStream inputStream) throws IOException {
 		// Peek into the file to look for DOCTYPE.
 		BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
@@ -95,7 +93,7 @@ public class XmlValidationModeDetector {
 			String content;
 			while ((content = reader.readLine()) != null) {
 				content = consumeCommentTokens(content);
-				if (this.inComment || !StringUtils.hasText(content)) {
+				if (this.inComment || !StringUtils.hasText(content)) { // 如果读取的行属于注释内容或空行则跳过
 					continue;
 				}
 				if (hasDoctype(content)) {
@@ -147,6 +145,7 @@ public class XmlValidationModeDetector {
 	 * to strip leading comment content on a line since the first piece of non comment content will be either
 	 * the DOCTYPE declaration or the root element of the document.
 	 */
+	// 消费注释标记，即处理注释
 	@Nullable
 	private String consumeCommentTokens(String line) {
 		if (!line.contains(START_COMMENT) && !line.contains(END_COMMENT)) {
