@@ -18,6 +18,7 @@ package org.springframework.beans.factory.xml;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLDecoder;
 
@@ -73,6 +74,7 @@ public class ResourceEntityResolver extends DelegatingEntityResolver {
 	@Override
 	@Nullable
 	public InputSource resolveEntity(String publicId, @Nullable String systemId) throws SAXException, IOException {
+		// 先调用父类DelegatingEntityResolver进行解析
 		InputSource source = super.resolveEntity(publicId, systemId);
 		if (source == null && systemId != null) {
 			String resourcePath = null;
@@ -81,7 +83,7 @@ public class ResourceEntityResolver extends DelegatingEntityResolver {
 				String givenUrl = new URL(decodedSystemId).toString();
 				String systemRootUrl = new File("").toURI().toURL().toString();
 				// Try relative to resource base if currently in system root.
-				if (givenUrl.startsWith(systemRootUrl)) {
+				if (givenUrl.startsWith(systemRootUrl)) { // systemId确定的url必须以systemRootUrl开头。
 					resourcePath = givenUrl.substring(systemRootUrl.length());
 				}
 			}
@@ -109,4 +111,9 @@ public class ResourceEntityResolver extends DelegatingEntityResolver {
 		return source;
 	}
 
+	// 测试
+	public static void main(String[] args) throws MalformedURLException {
+		String systemRootUrl = new File("").toURI().toURL().toString();
+		System.out.println(systemRootUrl);
+	}
 }

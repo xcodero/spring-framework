@@ -255,6 +255,9 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * Return the EntityResolver to use, building a default resolver
 	 * if none specified.
 	 */
+	// 1.Spring获取实体解析器的优先级：设置的 > ResourceEntityResolver > DelegatingEntityResolver
+	// 2. ResourceEntityResolver会先调用父类DelegatingEntityResolver进行解析，解析不成功再自己解析
+	// 3. DelegatingEntityResolver会根据systemId的文件类型后缀，委托给BeansDtdResolver或PluggableSchemaResolver进行解析
 	protected EntityResolver getEntityResolver() {
 		if (this.entityResolver == null) {
 			// Determine default EntityResolver to use.
