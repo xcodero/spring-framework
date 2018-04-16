@@ -29,6 +29,7 @@ import java.lang.reflect.Method;
  * @author Rod Johnson
  * @since 1.1
  */
+// 这是一个函数式接口
 public interface MethodReplacer {
 
 	/**

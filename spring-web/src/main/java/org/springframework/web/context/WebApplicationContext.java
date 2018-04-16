@@ -16,10 +16,10 @@
 
 package org.springframework.web.context;
 
-import javax.servlet.ServletContext;
-
 import org.springframework.context.ApplicationContext;
 import org.springframework.lang.Nullable;
+
+import javax.servlet.ServletContext;
 
 /**
  * Interface to provide configuration for a web application. This is read-only while
@@ -52,6 +52,7 @@ public interface WebApplicationContext extends ApplicationContext {
 	 * @see org.springframework.web.context.support.WebApplicationContextUtils#getWebApplicationContext
 	 * @see org.springframework.web.context.support.WebApplicationContextUtils#getRequiredWebApplicationContext
 	 */
+	// 属性名：org.springframework.web.context.WebApplicationContext.ROOT
 	String ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE = WebApplicationContext.class.getName() + ".ROOT";
 
 	/**

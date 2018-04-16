@@ -16,24 +16,11 @@
 
 package org.springframework.util;
 
+import org.springframework.lang.Nullable;
+
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.Charset;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.Iterator;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Properties;
-import java.util.Set;
-import java.util.StringTokenizer;
-import java.util.TimeZone;
-
-import org.springframework.lang.Nullable;
+import java.util.*;
 
 /**
  * Miscellaneous {@link String} utility methods.
@@ -152,10 +139,12 @@ public abstract class StringUtils {
 	 * length is greater than 0, and it does not contain whitespace only
 	 * @see #hasText(CharSequence)
 	 */
+	// 是否包含具有实际意义的文本
 	public static boolean hasText(@Nullable String str) {
 		return (str != null && !str.isEmpty() && containsText(str));
 	}
 
+	// 只要包含一个非空白字符，就返回true
 	private static boolean containsText(CharSequence str) {
 		int strLen = str.length();
 		for (int i = 0; i < strLen; i++) {

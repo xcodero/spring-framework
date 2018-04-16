@@ -507,8 +507,13 @@ public class XmlBeanDefinitionReader extends AbstractBeanDefinitionReader {
 	 * @see BeanDefinitionDocumentReader#registerBeanDefinitions
 	 */
 	public int registerBeanDefinitions(Document doc, Resource resource) throws BeanDefinitionStoreException {
+		// 利用反射的方式new一个DefaultBeanDefinitionDocumentReader对象
 		BeanDefinitionDocumentReader documentReader = createBeanDefinitionDocumentReader();
 		int countBefore = getRegistry().getBeanDefinitionCount();
+		// 1.委托给DefaultBeanDefinitionDocumentReader对象解析注册bean定义
+		// 2.createReaderContext(resouece）方法返回一个XmlReaderContext对象，它打包了resource以及this中的部分域，
+		// 为了方便向BeanDefinitionDocumentReader#registerBeanDefinitions方法进行传参
+		// 3.这里XmlReaderContext的作用跟集合很相似，只是打包的是不同类型数据。
 		documentReader.registerBeanDefinitions(doc, createReaderContext(resource));
 		return getRegistry().getBeanDefinitionCount() - countBefore;
 	}

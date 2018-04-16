@@ -16,17 +16,8 @@
 
 package org.springframework.web.context;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Properties;
-import java.util.concurrent.ConcurrentHashMap;
-import javax.servlet.ServletContext;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextException;
@@ -41,6 +32,14 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
+
+import javax.servlet.ServletContext;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Performs the actual initialization work for the root application context.
@@ -83,6 +82,8 @@ import org.springframework.util.StringUtils;
  * @see ConfigurableWebApplicationContext
  * @see org.springframework.web.context.support.XmlWebApplicationContext
  */
+// 上下文加载器
+// 进行实际的"根应用上下文"初始化工作，并作为属性注册到ServletContext中
 public class ContextLoader {
 
 	/**
@@ -138,6 +139,9 @@ public class ContextLoader {
 		// Load default strategy implementations from properties file.
 		// This is currently strictly internal and not meant to be customized
 		// by application developers.
+		// 加载默认的WebApplicationContext实现类（默认策略实现）。
+		// 默认策略实现的配置放在ContextLoader.properties文件中，内容如下
+		// org.springframework.web.context.WebApplicationContext=org.springframework.web.context.support.XmlWebApplicationContext
 		try {
 			ClassPathResource resource = new ClassPathResource(DEFAULT_STRATEGIES_PATH, ContextLoader.class);
 			defaultStrategies = PropertiesLoaderUtils.loadProperties(resource);
@@ -257,7 +261,10 @@ public class ContextLoader {
 	 * @see #CONTEXT_CLASS_PARAM
 	 * @see #CONFIG_LOCATION_PARAM
 	 */
+	// 初始化Spring的web应用上下文，并作为属性注册到ServletContext中
+	// 优先使用构造器参数注入的应用上下文；其次才新建一个
 	public WebApplicationContext initWebApplicationContext(ServletContext servletContext) {
+		// 只能配置一个根web应用上下文，web.xml中配置多个ContextLoader*会抛异常
 		if (servletContext.getAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE) != null) {
 			throw new IllegalStateException(
 					"Cannot initialize context because there is already a root application context present - " +
@@ -275,6 +282,7 @@ public class ContextLoader {
 			// Store context in local instance variable, to guarantee that
 			// it is available on ServletContext shutdown.
 			if (this.context == null) {
+				// 利用反射实例化一个ConfigurableWebApplicationContext对象
 				this.context = createWebApplicationContext(servletContext);
 			}
 			if (this.context instanceof ConfigurableWebApplicationContext) {
@@ -291,6 +299,7 @@ public class ContextLoader {
 					configureAndRefreshWebApplicationContext(cwac, servletContext);
 				}
 			}
+			// 作为属性注册到servlet上下文中（属性名为org.springframework.web.context.WebApplicationContext.ROOT）
 			servletContext.setAttribute(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE, this.context);
 
 			ClassLoader ccl = Thread.currentThread().getContextClassLoader();
@@ -353,6 +362,9 @@ public class ContextLoader {
 	 * @see #CONTEXT_CLASS_PARAM
 	 * @see org.springframework.web.context.support.XmlWebApplicationContext
 	 */
+	// 策略模式：策略（WebApplicationContext实现类）在web.xml中配置
+	// 1.先从servlet上下文的初始化参数中查找WebApplicationContext实现类
+	// 2.若没找到，再使用ContextLoader.properties中配置的WebApplicationContext实现类（默认策略）
 	protected Class<?> determineContextClass(ServletContext servletContext) {
 		String contextClassName = servletContext.getInitParameter(CONTEXT_CLASS_PARAM);
 		if (contextClassName != null) {
@@ -558,4 +570,8 @@ public class ContextLoader {
 		return currentContext;
 	}
 
+	// 测试用
+	public static void main(String[] args) {
+		System.out.println(WebApplicationContext.ROOT_WEB_APPLICATION_CONTEXT_ATTRIBUTE);
+	}
 }

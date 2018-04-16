@@ -34,6 +34,8 @@ import javax.servlet.ServletContextListener;
  * @see #setContextInitializers
  * @see org.springframework.web.WebApplicationInitializer
  */
+// 上下文加载器（Servlet上下文）监听器，Spring中提供的Servlet规范组件
+// 继承自ContextLoader，调用父类完成真正的根应用上下文加载工作
 public class ContextLoaderListener extends ContextLoader implements ServletContextListener {
 
 	/**
