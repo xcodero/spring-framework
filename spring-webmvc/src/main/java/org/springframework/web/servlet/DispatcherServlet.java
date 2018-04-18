@@ -16,26 +16,8 @@
 
 package org.springframework.web.servlet;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletException;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.BeanInitializationException;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -59,6 +41,13 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.util.NestedServletException;
 import org.springframework.web.util.WebUtils;
+
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * Central dispatcher for HTTP request handlers/controllers, e.g. for web UI controllers
@@ -279,6 +268,8 @@ public class DispatcherServlet extends FrameworkServlet {
 		// Load default strategy implementations from properties file.
 		// This is currently strictly internal and not meant to be customized
 		// by application developers.
+		// 加载所有策略接口的默认实现（默认策略实现）。——同ContextLoader
+		// 默认策略实现的配置放在DispatcherServlet.properties文件中，其中key为策略接口的完全限定名，value为策略接口实现的完全限定名
 		try {
 			ClassPathResource resource = new ClassPathResource(DEFAULT_STRATEGIES_PATH, DispatcherServlet.class);
 			defaultStrategies = PropertiesLoaderUtils.loadProperties(resource);
@@ -494,11 +485,17 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * Initialize the strategy objects that this servlet uses.
 	 * <p>May be overridden in subclasses in order to initialize further strategy objects.
 	 */
+	// 初始化各种"策略"对象
 	protected void initStrategies(ApplicationContext context) {
+		// 1.初始化multipart解析器
 		initMultipartResolver(context);
+		// 2.初始化地区解析器
 		initLocaleResolver(context);
+		// 3.初始化主题解析器
 		initThemeResolver(context);
+		// 4.初始化处理器映射（多个或一个）
 		initHandlerMappings(context);
+		// 5.初始化处理器适配器（）
 		initHandlerAdapters(context);
 		initHandlerExceptionResolvers(context);
 		initRequestToViewNameTranslator(context);
@@ -518,6 +515,7 @@ public class DispatcherServlet extends FrameworkServlet {
 				logger.debug("Using MultipartResolver [" + this.multipartResolver + "]");
 			}
 		}
+		// 没有定义multipart解析器时，设为null
 		catch (NoSuchBeanDefinitionException ex) {
 			// Default is no multipart resolver.
 			this.multipartResolver = null;
@@ -540,6 +538,7 @@ public class DispatcherServlet extends FrameworkServlet {
 				logger.debug("Using LocaleResolver [" + this.localeResolver + "]");
 			}
 		}
+		// 没有定义地区解析器时，使用默认的地区解析器（默认策略）
 		catch (NoSuchBeanDefinitionException ex) {
 			// We need to use the default.
 			this.localeResolver = getDefaultStrategy(context, LocaleResolver.class);
@@ -580,6 +579,11 @@ public class DispatcherServlet extends FrameworkServlet {
 	private void initHandlerMappings(ApplicationContext context) {
 		this.handlerMappings = null;
 
+		// 该参数是DispatcherServlet的初始化参数，配置方式如下：
+		// <init-param>
+		// 		<param-name>detectAllHandlerMappings</param-name>
+		//		<param-value>false</param-value>
+		// </init-param>
 		if (this.detectAllHandlerMappings) {
 			// Find all HandlerMappings in the ApplicationContext, including ancestor contexts.
 			Map<String, HandlerMapping> matchingBeans =

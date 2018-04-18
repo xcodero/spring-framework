@@ -16,15 +16,11 @@
 
 package org.springframework.beans;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringUtils;
+
+import java.io.Serializable;
+import java.util.*;
 
 /**
  * Default implementation of the {@link PropertyValues} interface.
@@ -216,6 +212,7 @@ public class MutablePropertyValues implements PropertyValues, Serializable {
 	 */
 	private PropertyValue mergeIfRequired(PropertyValue newPv, PropertyValue currentPv) {
 		Object value = newPv.getValue();
+		// 如果属性值是可合并的集合类型，进行合并得到新值
 		if (value instanceof Mergeable) {
 			Mergeable mergeable = (Mergeable) value;
 			if (mergeable.isMergeEnabled()) {

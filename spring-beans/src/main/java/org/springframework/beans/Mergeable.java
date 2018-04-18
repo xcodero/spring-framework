@@ -29,6 +29,8 @@ import org.springframework.lang.Nullable;
  * @see org.springframework.beans.factory.support.ManagedMap
  * @see org.springframework.beans.factory.support.ManagedProperties
  */
+// 可合并的（mixin接口）
+// 宿主类是集合类型
 public interface Mergeable {
 
 	/**

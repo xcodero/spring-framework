@@ -139,7 +139,7 @@ public class ContextLoader {
 		// Load default strategy implementations from properties file.
 		// This is currently strictly internal and not meant to be customized
 		// by application developers.
-		// 加载默认的WebApplicationContext实现类（默认策略实现）。
+		// 加载默认的WebApplicationContext实现类（默认策略实现）。——同DispatcherServlet
 		// 默认策略实现的配置放在ContextLoader.properties文件中，内容如下
 		// org.springframework.web.context.WebApplicationContext=org.springframework.web.context.support.XmlWebApplicationContext
 		try {

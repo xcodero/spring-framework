@@ -16,13 +16,13 @@
 
 package org.springframework.util;
 
+import org.springframework.lang.Nullable;
+
 import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
-
-import org.springframework.lang.Nullable;
 
 /**
  * Miscellaneous object utility methods.
@@ -619,6 +619,8 @@ public abstract class ObjectUtils {
 	 * @param obj the object
 	 * @return the object's identity code in hex notation
 	 */
+	// 获取一个对象的身份十六进制字符串（对象的身份哈希码转16进制）
+	// 提示：身份hash码，参见System.identityHashCode。
 	public static String getIdentityHexString(Object obj) {
 		return Integer.toHexString(System.identityHashCode(obj));
 	}

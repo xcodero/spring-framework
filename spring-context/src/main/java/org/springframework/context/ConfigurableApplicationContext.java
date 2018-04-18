@@ -40,6 +40,8 @@ import org.springframework.lang.Nullable;
  * @author Chris Beams
  * @since 03.11.2003
  */
+// 这是一个SPI接口，提供配置应用上下文的工具（除了ApplicationContext接口中的客户端方法外）。
+// 此接口封装的配置和生命周期方法是对客户端隐藏的——该接口存在的意义。
 public interface ConfigurableApplicationContext extends ApplicationContext, Lifecycle, Closeable {
 
 	/**
@@ -188,6 +190,7 @@ public interface ConfigurableApplicationContext extends ApplicationContext, Life
 	 * @see #close()
 	 * @see #getBeanFactory()
 	 */
+	// 激活：(a)至少刷新一次，(b)未关闭。
 	boolean isActive();
 
 	/**
