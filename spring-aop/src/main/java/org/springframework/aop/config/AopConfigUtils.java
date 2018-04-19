@@ -16,9 +16,6 @@
 
 package org.springframework.aop.config;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.springframework.aop.aspectj.annotation.AnnotationAwareAspectJAutoProxyCreator;
 import org.springframework.aop.aspectj.autoproxy.AspectJAwareAdvisorAutoProxyCreator;
 import org.springframework.aop.framework.autoproxy.InfrastructureAdvisorAutoProxyCreator;
@@ -28,6 +25,9 @@ import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.core.Ordered;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Utility class for handling registration of AOP auto-proxy creators.
@@ -55,6 +55,7 @@ public abstract class AopConfigUtils {
 	/**
 	 * Stores the auto proxy creator classes in escalation order.
 	 */
+	// 自动代理创建器的优先级列表（实际上就是按优先级增高的顺序存放自动代理创建器）
 	private static final List<Class<?>> APC_PRIORITY_LIST = new ArrayList<>();
 
 	/**
@@ -63,7 +64,7 @@ public abstract class AopConfigUtils {
 	static {
 		APC_PRIORITY_LIST.add(InfrastructureAdvisorAutoProxyCreator.class);
 		APC_PRIORITY_LIST.add(AspectJAwareAdvisorAutoProxyCreator.class);
-		APC_PRIORITY_LIST.add(AnnotationAwareAspectJAutoProxyCreator.class);
+		APC_PRIORITY_LIST.add(AnnotationAwareAspectJAutoProxyCreator.class); // 优先级最高
 	}
 
 
@@ -117,17 +118,21 @@ public abstract class AopConfigUtils {
 		}
 	}
 
+	// 注册或升级bean定义注册中心里自动代理创建器的bean定义
 	@Nullable
 	private static BeanDefinition registerOrEscalateApcAsRequired(Class<?> cls, BeanDefinitionRegistry registry,
 			@Nullable Object source) {
 
 		Assert.notNull(registry, "BeanDefinitionRegistry must not be null");
 
+		// 1.如果已存在org.springframework.aop.config.internalAutoProxyCreator的bean定义，升级bean定义注册中心的bean定义即可
+		// 就是将bean定义注册中心中org.springframework.aop.config.internalAutoProxyCreator的bean定义中的beanClassName替换成优先级高的类
 		if (registry.containsBeanDefinition(AUTO_PROXY_CREATOR_BEAN_NAME)) {
 			BeanDefinition apcDefinition = registry.getBeanDefinition(AUTO_PROXY_CREATOR_BEAN_NAME);
 			if (!cls.getName().equals(apcDefinition.getBeanClassName())) {
 				int currentPriority = findPriorityForClass(apcDefinition.getBeanClassName());
 				int requiredPriority = findPriorityForClass(cls);
+				// 将自动代理创建器bean定义中的beanClassName重设为优先级高的类
 				if (currentPriority < requiredPriority) {
 					apcDefinition.setBeanClassName(cls.getName());
 				}
@@ -135,6 +140,7 @@ public abstract class AopConfigUtils {
 			return null;
 		}
 
+		// 2.如果bean定义注册中心中没找到，新建一个bean定义并注册
 		RootBeanDefinition beanDefinition = new RootBeanDefinition(cls);
 		beanDefinition.setSource(source);
 		beanDefinition.getPropertyValues().add("order", Ordered.HIGHEST_PRECEDENCE);

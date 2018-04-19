@@ -80,14 +80,19 @@ public abstract class AopNamespaceUtils {
 		registerComponentIfNecessary(beanDefinition, parserContext);
 	}
 
+	// 处理aspectj-autoproxy元素的两个属性：proxy-target-class、expose-proxy
 	private static void useClassProxyingIfNecessary(BeanDefinitionRegistry registry, @Nullable Element sourceElement) {
 		if (sourceElement != null) {
+			// 1.处理proxy-target-class（代理目标类）属性
 			boolean proxyTargetClass = Boolean.parseBoolean(sourceElement.getAttribute(PROXY_TARGET_CLASS_ATTRIBUTE));
 			if (proxyTargetClass) {
+				// 强制自动代理创建器使用xxx，就是设置org.springframework.aop.config.internalAutoProxyCreator这个bean定义中的属性
 				AopConfigUtils.forceAutoProxyCreatorToUseClassProxying(registry);
 			}
+			// 2.处理expose-proxy（暴露代理）属性
 			boolean exposeProxy = Boolean.parseBoolean(sourceElement.getAttribute(EXPOSE_PROXY_ATTRIBUTE));
 			if (exposeProxy) {
+				// 强制自动代理创建器使用xxx，就是设置org.springframework.aop.config.internalAutoProxyCreator这个bean定义中的属性
 				AopConfigUtils.forceAutoProxyCreatorToExposeProxy(registry);
 			}
 		}
