@@ -159,6 +159,8 @@ public interface ConfigurableApplicationContext extends ApplicationContext, Life
 	 * @throws IllegalStateException if already initialized and multiple refresh
 	 * attempts are not supported
 	 */
+	// 加载或刷新配置的持久化表示——XML文件、属性文件、关系数据库模式
+	// 该操作具有"原子性"
 	void refresh() throws BeansException, IllegalStateException;
 
 	/**

@@ -24,6 +24,7 @@ import org.springframework.lang.Nullable;
  * @author Chris Beams
  * @since 3.1
  */
+// 包含一个或多个ProertySource的持有器（容器、集合）
 public interface PropertySources extends Iterable<PropertySource<?>> {
 
 	/**

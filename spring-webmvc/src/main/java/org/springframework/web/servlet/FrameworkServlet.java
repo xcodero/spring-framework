@@ -518,6 +518,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 	 * @see #setContextClass
 	 * @see #setContextConfigLocation
 	 */
+	// 初始化和发布该servlet对应的web应用上下文
 	protected WebApplicationContext initWebApplicationContext() {
 		WebApplicationContext rootContext =
 				WebApplicationContextUtils.getWebApplicationContext(getServletContext());
@@ -563,6 +564,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 			wac = createWebApplicationContext(rootContext);
 		}
 
+		// 4.某些情形下需手动触发onRefresh方法调用
 		if (!this.refreshEventReceived) {
 			// Either the context is not a ConfigurableApplicationContext with refresh
 			// support or the context injected at construction time had already been
@@ -570,6 +572,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 			onRefresh(wac);
 		}
 
+		// 5.将该servlet对应的web应用上下文绑定到servlet上下文的属性上
 		if (this.publishContext) {
 			// Publish the context as a servlet context attribute.
 			String attrName = getServletContextAttributeName();
@@ -655,6 +658,8 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 	}
 
 	protected void configureAndRefreshWebApplicationContext(ConfigurableWebApplicationContext wac) {
+		// 一、配置web应用上下文
+		// 1a重设应用上下文（唯一）ID，改为人类可读形式
 		if (ObjectUtils.identityToString(wac).equals(wac.getId())) {
 			// The application context id is still set to its original default value
 			// -> assign a more useful id based on available information
@@ -668,21 +673,31 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 			}
 		}
 
+		// 1b
 		wac.setServletContext(getServletContext());
+		// 1c
 		wac.setServletConfig(getServletConfig());
+		// 1d
 		wac.setNamespace(getNamespace());
+		// 1e
 		wac.addApplicationListener(new SourceFilteringListener(wac, new ContextRefreshListener()));
 
 		// The wac environment's #initPropertySources will be called in any case when the context
 		// is refreshed; do it eagerly here to ensure servlet property sources are in place for
 		// use in any post-processing or initialization that occurs below prior to #refresh
+		// 二、初始化web应用上下文中环境的属性源
+		// 1.wac.refresh()方法中会调用ConfigurableWebEnvironment#initPropertySources，
+		// 2.此处提前调用是防止postProcessWebApplicationContext、applyInitializers两个方法中要用到
 		ConfigurableEnvironment env = wac.getEnvironment();
 		if (env instanceof ConfigurableWebEnvironment) {
 			((ConfigurableWebEnvironment) env).initPropertySources(getServletContext(), getServletConfig());
 		}
 
+		// 三、后处理web应用上下文
 		postProcessWebApplicationContext(wac);
+		// 四、对web应用上下文应用所有初始化器
 		applyInitializers(wac);
+		// 五、web应用上下文刷新
 		wac.refresh();
 	}
 

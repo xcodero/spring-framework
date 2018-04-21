@@ -290,6 +290,8 @@ public abstract class WebApplicationContextUtils {
 	 * @see org.springframework.core.env.PropertySource.StubPropertySource
 	 * @see org.springframework.core.env.ConfigurableEnvironment#getPropertySources()
 	 */
+	// 用真正的ServletContext属性源、ServletConfig属性源替换它们的"桩属性源"。
+	// 该方法具有"幂等性"——调用多次的情况下只有第一次发生替换
 	public static void initServletPropertySources(MutablePropertySources sources,
 			@Nullable ServletContext servletContext, @Nullable ServletConfig servletConfig) {
 

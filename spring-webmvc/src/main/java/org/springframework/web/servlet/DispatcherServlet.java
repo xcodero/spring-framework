@@ -485,7 +485,7 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * Initialize the strategy objects that this servlet uses.
 	 * <p>May be overridden in subclasses in order to initialize further strategy objects.
 	 */
-	// 初始化各种"策略"对象
+	// 初始化该servlet使用到的各种"策略"对象
 	protected void initStrategies(ApplicationContext context) {
 		// 1.初始化multipart解析器
 		initMultipartResolver(context);
@@ -493,13 +493,17 @@ public class DispatcherServlet extends FrameworkServlet {
 		initLocaleResolver(context);
 		// 3.初始化主题解析器
 		initThemeResolver(context);
-		// 4.初始化处理器映射（多个或一个）
+		// 4.初始化处理器映射（多个）
 		initHandlerMappings(context);
-		// 5.初始化处理器适配器（）
+		// 5.初始化处理器适配器（多个）
 		initHandlerAdapters(context);
+		// 6.初始化处理器异常解析器（多个）
 		initHandlerExceptionResolvers(context);
+		// 7.初始化请求到视图名翻译器
 		initRequestToViewNameTranslator(context);
+		// 8.初始化视图解析器（多个）
 		initViewResolvers(context);
+		// 9.初始化FlashMap管理器
 		initFlashMapManager(context);
 	}
 
@@ -561,6 +565,7 @@ public class DispatcherServlet extends FrameworkServlet {
 				logger.debug("Using ThemeResolver [" + this.themeResolver + "]");
 			}
 		}
+		// 没有定义主题解析器时，使用默认的主题解析器（默认策略）
 		catch (NoSuchBeanDefinitionException ex) {
 			// We need to use the default.
 			this.themeResolver = getDefaultStrategy(context, ThemeResolver.class);
@@ -576,14 +581,11 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * <p>If no HandlerMapping beans are defined in the BeanFactory for this namespace,
 	 * we default to BeanNameUrlHandlerMapping.
 	 */
+	// 初始化处理器映射
 	private void initHandlerMappings(ApplicationContext context) {
 		this.handlerMappings = null;
 
-		// 该参数是DispatcherServlet的初始化参数，配置方式如下：
-		// <init-param>
-		// 		<param-name>detectAllHandlerMappings</param-name>
-		//		<param-value>false</param-value>
-		// </init-param>
+		// 1.该参数是DispatcherServlet的初始化参数，默认是true，会加载当前系统中所有实现了HandlerMapping接口的bean
 		if (this.detectAllHandlerMappings) {
 			// Find all HandlerMappings in the ApplicationContext, including ancestor contexts.
 			Map<String, HandlerMapping> matchingBeans =
@@ -591,9 +593,15 @@ public class DispatcherServlet extends FrameworkServlet {
 			if (!matchingBeans.isEmpty()) {
 				this.handlerMappings = new ArrayList<>(matchingBeans.values());
 				// We keep HandlerMappings in sorted order.
+				// 对处理器映射排序，说明处理器映射具有优先级
 				AnnotationAwareOrderComparator.sort(this.handlerMappings);
 			}
 		}
+		// 2.按如下方式配置，只加载名为handlerMapping的bean
+		// <init-param>
+		// 		<param-name>detectAllHandlerMappings</param-name>
+		//		<param-value>false</param-value>
+		// </init-param>
 		else {
 			try {
 				HandlerMapping hm = context.getBean(HANDLER_MAPPING_BEAN_NAME, HandlerMapping.class);
@@ -606,6 +614,7 @@ public class DispatcherServlet extends FrameworkServlet {
 
 		// Ensure we have at least one HandlerMapping, by registering
 		// a default HandlerMapping if no other mappings are found.
+		// 3.没有定义任何处理器映射时，使用默认的处理器映射（默认策略）
 		if (this.handlerMappings == null) {
 			this.handlerMappings = getDefaultStrategies(context, HandlerMapping.class);
 			if (logger.isDebugEnabled()) {
@@ -619,9 +628,11 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * <p>If no HandlerAdapter beans are defined in the BeanFactory for this namespace,
 	 * we default to SimpleControllerHandlerAdapter.
 	 */
+	// 初始化处理器适配器列表，逻辑跟初始化处理器映射类似
 	private void initHandlerAdapters(ApplicationContext context) {
 		this.handlerAdapters = null;
 
+		// 1.该参数是DispatcherServlet的初始化参数，默认是true，会加载当前系统中所有实现了HandlerMapping接口的bean
 		if (this.detectAllHandlerAdapters) {
 			// Find all HandlerAdapters in the ApplicationContext, including ancestor contexts.
 			Map<String, HandlerAdapter> matchingBeans =
@@ -632,6 +643,11 @@ public class DispatcherServlet extends FrameworkServlet {
 				AnnotationAwareOrderComparator.sort(this.handlerAdapters);
 			}
 		}
+		// 2.按如下方式配置，只加载名为handlerAdapter的bean
+		// <init-param>
+		// 		<param-name>detectAllHandlerAdapters</param-name>
+		//		<param-value>false</param-value>
+		// </init-param>
 		else {
 			try {
 				HandlerAdapter ha = context.getBean(HANDLER_ADAPTER_BEAN_NAME, HandlerAdapter.class);
@@ -644,6 +660,7 @@ public class DispatcherServlet extends FrameworkServlet {
 
 		// Ensure we have at least some HandlerAdapters, by registering
 		// default HandlerAdapters if no other adapters are found.
+		// 3.没有定义任何处理器适配器时，使用默认的处理器适配器（默认策略）
 		if (this.handlerAdapters == null) {
 			this.handlerAdapters = getDefaultStrategies(context, HandlerAdapter.class);
 			if (logger.isDebugEnabled()) {
@@ -657,9 +674,11 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * <p>If no bean is defined with the given name in the BeanFactory for this namespace,
 	 * we default to no exception resolver.
 	 */
+	// 初始化处理器异常解析器列表，逻辑跟初始化处理器映射类似
 	private void initHandlerExceptionResolvers(ApplicationContext context) {
 		this.handlerExceptionResolvers = null;
 
+		// 1.该参数是DispatcherServlet的初始化参数，默认是true，会加载当前系统中所有实现了HandlerExceptionResolver接口的bean
 		if (this.detectAllHandlerExceptionResolvers) {
 			// Find all HandlerExceptionResolvers in the ApplicationContext, including ancestor contexts.
 			Map<String, HandlerExceptionResolver> matchingBeans = BeanFactoryUtils
@@ -670,6 +689,11 @@ public class DispatcherServlet extends FrameworkServlet {
 				AnnotationAwareOrderComparator.sort(this.handlerExceptionResolvers);
 			}
 		}
+		// 2.按如下方式配置，只加载名为handlerExceptionResolver的bean
+		// <init-param>
+		// 		<param-name>detectAllHandlerExceptionResolvers</param-name>
+		//		<param-value>false</param-value>
+		// </init-param>
 		else {
 			try {
 				HandlerExceptionResolver her =
@@ -683,6 +707,7 @@ public class DispatcherServlet extends FrameworkServlet {
 
 		// Ensure we have at least some HandlerExceptionResolvers, by registering
 		// default HandlerExceptionResolvers if no other resolvers are found.
+		// 3.没有定义任何处理器异常解析器时，使用默认的处理器适配器（默认策略）
 		if (this.handlerExceptionResolvers == null) {
 			this.handlerExceptionResolvers = getDefaultStrategies(context, HandlerExceptionResolver.class);
 			if (logger.isDebugEnabled()) {
@@ -820,6 +845,7 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * @return the corresponding strategy object
 	 * @see #getDefaultStrategies
 	 */
+	// 获取某个策略接口类型的一个默认实现
 	protected <T> T getDefaultStrategy(ApplicationContext context, Class<T> strategyInterface) {
 		List<T> strategies = getDefaultStrategies(context, strategyInterface);
 		if (strategies.size() != 1) {
@@ -838,6 +864,7 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * @param strategyInterface the strategy interface
 	 * @return the List of corresponding strategy objects
 	 */
+	// 获取某个策略接口类型的多个默认实现
 	@SuppressWarnings("unchecked")
 	protected <T> List<T> getDefaultStrategies(ApplicationContext context, Class<T> strategyInterface) {
 		String key = strategyInterface.getName();
@@ -847,8 +874,11 @@ public class DispatcherServlet extends FrameworkServlet {
 			List<T> strategies = new ArrayList<>(classNames.length);
 			for (String className : classNames) {
 				try {
+					// 1.加载类
 					Class<?> clazz = ClassUtils.forName(className, DispatcherServlet.class.getClassLoader());
+					// 2.实例化
 					Object strategy = createDefaultStrategy(context, clazz);
+					// 3.添加到返回列表里
 					strategies.add((T) strategy);
 				}
 				catch (ClassNotFoundException ex) {

@@ -40,6 +40,7 @@ package org.springframework.core;
  * @see org.springframework.core.annotation.Order
  * @see org.springframework.core.annotation.AnnotationAwareOrderComparator
  */
+// ordered（有序的）
 public interface Ordered {
 
 	/**

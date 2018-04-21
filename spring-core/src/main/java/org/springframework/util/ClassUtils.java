@@ -232,6 +232,8 @@ public abstract class ClassUtils {
 	 * @throws LinkageError if the class file could not be loaded
 	 * @see Class#forName(String, boolean, ClassLoader)
 	 */
+	// 用来代替java.lang.Class.forName方法，能返回基本类型、数组类型、内部类类型的人类友好形式
+	// 属于驱动层逻辑
 	public static Class<?> forName(String name, @Nullable ClassLoader classLoader)
 			throws ClassNotFoundException, LinkageError {
 

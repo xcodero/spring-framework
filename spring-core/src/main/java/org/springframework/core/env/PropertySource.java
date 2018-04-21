@@ -32,7 +32,7 @@ import org.springframework.util.ObjectUtils;
  * implementations.
  *
  * <p>{@code PropertySource} objects are not typically used in isolation, but rather
- * through a {@link PropertySources} object, which aggregates property sources and in
+ * through a {@link PropertySources} object, which aggregates（聚集） property sources and in
  * conjunction with a {@link PropertyResolver} implementation that can perform
  * precedence-based searches across the set of {@code PropertySources}.
  *
@@ -56,6 +56,9 @@ import org.springframework.util.ObjectUtils;
  * @see MutablePropertySources
  * @see org.springframework.context.annotation.PropertySource
  */
+// 1.属性源——表示名值对属性的源。
+// 2.其只读属性source可能是Properties类型、Map类型、ServletContext类型、 ServletConfig类型，分别对应不同的子类。
+// 3.将PropertySources跟PropertyResolver结合使用，可以实现基于优先级的属性检索
 public abstract class PropertySource<T> {
 
 	protected final Log logger = LogFactory.getLog(getClass());
