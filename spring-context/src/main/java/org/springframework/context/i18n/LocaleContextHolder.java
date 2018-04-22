@@ -29,6 +29,9 @@ import org.springframework.lang.Nullable;
  * by any child threads spawned by the current thread if the
  * {@code inheritable} flag is set to {@code true}.
  *
+ * 简单的持有器类，将一个LocaleContext实例关联到当前线程。
+ * 如果inheritable置为true，则当前线程孵化出的孩子线程也会关联当前线程的LocaleContext实例
+ *
  * <p>Used as a central holder for the current Locale in Spring,
  * wherever necessary: for example, in MessageSourceAccessor.
  * DispatcherServlet automatically exposes its current Locale here.

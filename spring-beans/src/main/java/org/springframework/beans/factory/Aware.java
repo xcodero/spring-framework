@@ -24,6 +24,8 @@ package org.springframework.beans.factory;
  * consist of just one void-returning method that accepts a single
  * argument.
  *
+ * 标记接口，表示一个bean能够通过回调风格的方法被Spring容器通知某个框架对象
+ *
  * <p>Note that merely implementing {@link Aware} provides no default
  * functionality. Rather, processing must be done explicitly, for example
  * in a {@link org.springframework.beans.factory.config.BeanPostProcessor BeanPostProcessor}.

@@ -986,6 +986,7 @@ public abstract class FrameworkServlet extends HttpServletBean implements Applic
 	protected final void processRequest(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
+		// 计时器开始计时
 		long startTime = System.currentTimeMillis();
 		Throwable failureCause = null;
 

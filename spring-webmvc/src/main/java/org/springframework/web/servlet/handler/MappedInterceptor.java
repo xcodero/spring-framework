@@ -16,9 +16,6 @@
 
 package org.springframework.web.servlet.handler;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.PathMatcher;
@@ -26,10 +23,15 @@ import org.springframework.web.context.request.WebRequestInterceptor;
 import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * Contains and delegates calls to a {@link HandlerInterceptor} along with
  * include (and optionally exclude) path patterns to which the interceptor should apply.
  * Also provides matching logic to test if the interceptor applies to a given request path.
+ *
+ * <p>封装了一个HandlerInterceptor、包含路径模式、排除路径模式（可选）。</p>
  *
  * <p>A MappedInterceptor can be registered directly with any
  * {@link org.springframework.web.servlet.handler.AbstractHandlerMethodMapping}.
@@ -42,6 +44,7 @@ import org.springframework.web.servlet.ModelAndView;
  * @author Brian Clozel
  * @since 3.0
  */
+// 被映射的拦截器
 public final class MappedInterceptor implements HandlerInterceptor {
 
 	@Nullable

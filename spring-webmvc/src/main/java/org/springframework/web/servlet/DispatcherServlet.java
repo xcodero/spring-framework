@@ -581,7 +581,7 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * <p>If no HandlerMapping beans are defined in the BeanFactory for this namespace,
 	 * we default to BeanNameUrlHandlerMapping.
 	 */
-	// 初始化处理器映射
+	// 初始化处理器映射列表
 	private void initHandlerMappings(ApplicationContext context) {
 		this.handlerMappings = null;
 
@@ -628,7 +628,7 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * <p>If no HandlerAdapter beans are defined in the BeanFactory for this namespace,
 	 * we default to SimpleControllerHandlerAdapter.
 	 */
-	// 初始化处理器适配器列表，逻辑跟初始化处理器映射类似
+	// 初始化处理器适配器列表，逻辑跟初始化处理器映射列表类似
 	private void initHandlerAdapters(ApplicationContext context) {
 		this.handlerAdapters = null;
 
@@ -674,7 +674,7 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * <p>If no bean is defined with the given name in the BeanFactory for this namespace,
 	 * we default to no exception resolver.
 	 */
-	// 初始化处理器异常解析器列表，逻辑跟初始化处理器映射类似
+	// 初始化处理器异常解析器列表，逻辑跟初始化处理器映射列表类似
 	private void initHandlerExceptionResolvers(ApplicationContext context) {
 		this.handlerExceptionResolvers = null;
 
@@ -728,6 +728,7 @@ public class DispatcherServlet extends FrameworkServlet {
 				logger.debug("Using RequestToViewNameTranslator [" + this.viewNameTranslator + "]");
 			}
 		}
+		// 没有定义请求到视图名翻译器时，使用默认的请求到视图名翻译器（默认策略）
 		catch (NoSuchBeanDefinitionException ex) {
 			// We need to use the default.
 			this.viewNameTranslator = getDefaultStrategy(context, RequestToViewNameTranslator.class);
@@ -744,9 +745,11 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * <p>If no ViewResolver beans are defined in the BeanFactory for this
 	 * namespace, we default to InternalResourceViewResolver.
 	 */
+	// 初始化视图解析器列表，逻辑跟初始化处理器映射列表类似
 	private void initViewResolvers(ApplicationContext context) {
 		this.viewResolvers = null;
 
+		// 1.该参数是DispatcherServlet的初始化参数，默认是true，会加载当前系统中所有实现了ViewResolver接口的bean
 		if (this.detectAllViewResolvers) {
 			// Find all ViewResolvers in the ApplicationContext, including ancestor contexts.
 			Map<String, ViewResolver> matchingBeans =
@@ -757,6 +760,11 @@ public class DispatcherServlet extends FrameworkServlet {
 				AnnotationAwareOrderComparator.sort(this.viewResolvers);
 			}
 		}
+		// 2.按如下方式配置，只加载名为viewResolver的bean
+		// <init-param>
+		// 		<param-name>detectAllViewResolvers</param-name>
+		//		<param-value>false</param-value>
+		// </init-param>
 		else {
 			try {
 				ViewResolver vr = context.getBean(VIEW_RESOLVER_BEAN_NAME, ViewResolver.class);
@@ -769,6 +777,7 @@ public class DispatcherServlet extends FrameworkServlet {
 
 		// Ensure we have at least one ViewResolver, by registering
 		// a default ViewResolver if no other resolvers are found.
+		// 3.没有定义任何视图解析器时，使用默认的处理器适配器（默认策略）
 		if (this.viewResolvers == null) {
 			this.viewResolvers = getDefaultStrategies(context, ViewResolver.class);
 			if (logger.isDebugEnabled()) {
@@ -789,6 +798,7 @@ public class DispatcherServlet extends FrameworkServlet {
 				logger.debug("Using FlashMapManager [" + this.flashMapManager + "]");
 			}
 		}
+		// 没有定义FlashMap管理器时，使用默认的FlashMap管理器（默认策略）
 		catch (NoSuchBeanDefinitionException ex) {
 			// We need to use the default.
 			this.flashMapManager = getDefaultStrategy(context, FlashMapManager.class);
@@ -956,6 +966,7 @@ public class DispatcherServlet extends FrameworkServlet {
 		}
 
 		try {
+			// 真正的"分派"逻辑
 			doDispatch(request, response);
 		}
 		finally {
@@ -991,17 +1002,22 @@ public class DispatcherServlet extends FrameworkServlet {
 			Exception dispatchException = null;
 
 			try {
+
+				// 1.如果是multipart内容类型的请求，则解析为MultipartHttpServletRequest实例
 				processedRequest = checkMultipart(request);
 				multipartRequestParsed = (processedRequest != request);
 
 				// Determine handler for the current request.
+				// 2.确定当前HTTP请求的HandlerExecutionChain处理器
 				mappedHandler = getHandler(processedRequest);
 				if (mappedHandler == null) {
+					// 3.未找到处理器时的处理——抛异常或返回404
 					noHandlerFound(processedRequest, response);
 					return;
 				}
 
 				// Determine handler adapter for the current request.
+				// 4.根据原始处理器获得处理器适配器
 				HandlerAdapter ha = getHandlerAdapter(mappedHandler.getHandler());
 
 				// Process last-modified header, if supported by the handler.
@@ -1149,14 +1165,17 @@ public class DispatcherServlet extends FrameworkServlet {
 	 */
 	protected HttpServletRequest checkMultipart(HttpServletRequest request) throws MultipartException {
 		if (this.multipartResolver != null && this.multipartResolver.isMultipart(request)) {
+			// 1.如果当前HTTP请求已经是MultipartHttpServletRequest，则不再解析
 			if (WebUtils.getNativeRequest(request, MultipartHttpServletRequest.class) != null) {
 				logger.debug("Request is already a MultipartHttpServletRequest - if not in a forward, " +
 						"this typically results from an additional MultipartFilter in web.xml");
 			}
+			// 2.如果当前HTTP请求不是MultipartHttpServletRequest，但HTTP请求中记录过multipart异常，则不再解析
 			else if (hasMultipartException(request) ) {
 				logger.debug("Multipart resolution failed for current request before - " +
 						"skipping re-resolution for undisturbed error rendering");
 			}
+			// 3.否则，解析——根据当前HTTP请求new一个MultipartHttpServletRequest实例
 			else {
 				try {
 					return this.multipartResolver.resolveMultipart(request);
@@ -1178,6 +1197,8 @@ public class DispatcherServlet extends FrameworkServlet {
 
 	/**
 	 * Check "javax.servlet.error.exception" attribute for a multipart exception.
+	 *
+	 * 检查请求中的"javax.servlet.error.exception"属性关联的是不是一个multipart异常
 	 */
 	private boolean hasMultipartException(HttpServletRequest request) {
 		Throwable error = (Throwable) request.getAttribute(WebUtils.ERROR_EXCEPTION_ATTRIBUTE);
@@ -1214,6 +1235,7 @@ public class DispatcherServlet extends FrameworkServlet {
 	@Nullable
 	protected HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
 		if (this.handlerMappings != null) {
+			// handlerMappings中的处理器映射是排过序的（即有优先级关系），此处循环相当于按优先级遍历
 			for (HandlerMapping hm : this.handlerMappings) {
 				if (logger.isTraceEnabled()) {
 					logger.trace(
@@ -1239,10 +1261,12 @@ public class DispatcherServlet extends FrameworkServlet {
 			pageNotFoundLogger.warn("No mapping found for HTTP request with URI [" + getRequestUri(request) +
 					"] in DispatcherServlet with name '" + getServletName() + "'");
 		}
+		// 抛异常
 		if (this.throwExceptionIfNoHandlerFound) {
 			throw new NoHandlerFoundException(request.getMethod(), getRequestUri(request),
 					new ServletServerHttpRequest(request).getHeaders());
 		}
+		// 返回404
 		else {
 			response.sendError(HttpServletResponse.SC_NOT_FOUND);
 		}
@@ -1255,6 +1279,7 @@ public class DispatcherServlet extends FrameworkServlet {
 	 */
 	protected HandlerAdapter getHandlerAdapter(Object handler) throws ServletException {
 		if (this.handlerAdapters != null) {
+			// handlerAdapters中的处理器适配器是排过序的（即有优先级关系），此处循环相当于按优先级遍历
 			for (HandlerAdapter ha : this.handlerAdapters) {
 				if (logger.isTraceEnabled()) {
 					logger.trace("Testing handler adapter [" + ha + "]");

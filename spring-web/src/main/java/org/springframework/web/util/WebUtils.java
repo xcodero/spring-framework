@@ -16,35 +16,20 @@
 
 package org.springframework.web.util;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.Collection;
-import java.util.Enumeration;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.StringTokenizer;
-import java.util.TreeMap;
-import javax.servlet.ServletContext;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletRequestWrapper;
-import javax.servlet.ServletResponse;
-import javax.servlet.ServletResponseWrapper;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
-import org.springframework.util.CollectionUtils;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
-import org.springframework.util.ObjectUtils;
-import org.springframework.util.StringUtils;
+import org.springframework.util.*;
+
+import javax.servlet.*;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.*;
 
 /**
  * Miscellaneous utilities for web applications.
@@ -377,9 +362,12 @@ public abstract class WebUtils {
 	 * Return an appropriate request object of the specified type, if available,
 	 * unwrapping the given request as far as necessary.
 	 * @param request the servlet request to introspect
+	 *                需要内省的请求
 	 * @param requiredType the desired type of request object
 	 * @return the matching request object, or {@code null} if none
 	 * of that type is available
+	 *
+	 * 获取原生请求——将请求转换为指定类型，若不可转型返回null
 	 */
 	@SuppressWarnings("unchecked")
 	@Nullable

@@ -45,6 +45,7 @@ import org.springframework.util.StringUtils;
  * @author Rossen Stoyanchev
  * @since 14.01.2004
  */
+// URL路径匹配的帮助类
 public class UrlPathHelper {
 
 	/**
@@ -154,6 +155,9 @@ public class UrlPathHelper {
 	/**
 	 * Return the mapping lookup path for the given request, within the current
 	 * servlet mapping if applicable, else within the web application.
+	 *
+	 * 返回给定请求中的映射器查询路径
+	 *
 	 * <p>Detects include request URL if called within a RequestDispatcher include.
 	 * @param request current HTTP request
 	 * @return the lookup path
@@ -163,9 +167,11 @@ public class UrlPathHelper {
 	public String getLookupPathForRequest(HttpServletRequest request) {
 		// Always use full path within current servlet context?
 		if (this.alwaysUseFullPath) {
+			// 返回web应用下的路径
 			return getPathWithinApplication(request);
 		}
 		// Else, use path within current servlet mapping if applicable
+		// 返回当前servlet映射下的路径（不包含servlet映射本身）
 		String rest = getPathWithinServletMapping(request);
 		if (!"".equals(rest)) {
 			return rest;
@@ -179,6 +185,9 @@ public class UrlPathHelper {
 	 * Return the path within the servlet mapping for the given request,
 	 * i.e. the part of the request's URL beyond the part that called the servlet,
 	 * or "" if the whole URL has been used to identify the servlet.
+	 *
+	 * 返回给定请求中属于servlet映射下的路径（不包含servlet映射本身）
+	 *
 	 * <p>Detects include request URL if called within a RequestDispatcher include.
 	 * <p>E.g.: servlet mapping = "/*"; request URI = "/test/a" -> "/test/a".
 	 * <p>E.g.: servlet mapping = "/"; request URI = "/test/a" -> "/test/a".
@@ -231,6 +240,9 @@ public class UrlPathHelper {
 
 	/**
 	 * Return the path within the web application for the given request.
+	 *
+	 * 返回给定请求中属于web应用内的路径（不包含上下文路径本身）
+	 *
 	 * <p>Detects include request URL if called within a RequestDispatcher include.
 	 * @param request current HTTP request
 	 * @return the path within the web application

@@ -16,17 +16,20 @@
 
 package org.springframework.web.servlet;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.lang.Nullable;
 import org.springframework.web.method.HandlerMethod;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Workflow interface that allows for customized handler execution chains.
  * Applications can register any number of existing or custom interceptors
  * for certain groups of handlers, to add common preprocessing behavior
  * without needing to modify each handler implementation.
+ *
+ * <p>工作流接口，允许自定义处理器执行链。应用可以为某组处理器注册任意数量的现有或自定义拦截器，
+ * 来增加公共前处理逻辑。</p>
  *
  * <p>A HandlerInterceptor gets called before the appropriate HandlerAdapter
  * triggers the execution of the handler itself. This mechanism can be used
@@ -73,6 +76,7 @@ import org.springframework.web.method.HandlerMethod;
  * @see org.springframework.web.servlet.theme.ThemeChangeInterceptor
  * @see javax.servlet.Filter
  */
+// 处理器拦截器
 public interface HandlerInterceptor {
 
 	/**

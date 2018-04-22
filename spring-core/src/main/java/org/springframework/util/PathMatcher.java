@@ -22,12 +22,16 @@ import java.util.Map;
 /**
  * Strategy interface for {@code String}-based path matching.
  *
+ * 基于字符串的路径匹配策略接口
+ *
  * <p>Used by {@link org.springframework.core.io.support.PathMatchingResourcePatternResolver},
  * {@link org.springframework.web.servlet.handler.AbstractUrlHandlerMapping},
  * and {@link org.springframework.web.servlet.mvc.WebContentInterceptor}.
  *
  * <p>The default implementation is {@link AntPathMatcher}, supporting the
  * Ant-style pattern syntax.
+ *
+ * 默认实现是AntPathMatcher，支持ant风格的模式语法
  *
  * @author Juergen Hoeller
  * @since 1.2

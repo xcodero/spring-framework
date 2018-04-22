@@ -88,7 +88,11 @@ public interface MultipartResolver {
 	 * Determine if the given request contains multipart content.
 	 * <p>Will typically check for content type "multipart/form-data", but the actually
 	 * accepted requests might depend on the capabilities of the resolver implementation.
+	 *
+	 * 典型地做法是检查Content-Type头部
+	 *
 	 * @param request the servlet request to be evaluated
+	 *                待评估的servlet请求
 	 * @return whether the request contains multipart content
 	 */
 	boolean isMultipart(HttpServletRequest request);
