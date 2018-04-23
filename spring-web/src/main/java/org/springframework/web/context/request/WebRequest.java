@@ -16,17 +16,19 @@
 
 package org.springframework.web.context.request;
 
+import org.springframework.lang.Nullable;
+
 import java.security.Principal;
 import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 
-import org.springframework.lang.Nullable;
-
 /**
  * Generic interface for a web request. Mainly intended for generic web
  * request interceptors, giving them access to general request metadata,
  * not for actual handling of the request.
+ *
+ * <p>web请求的通用接口。主要是为了让web请求拦截器能够访问一般的请求元数据，不是为了真正的请求处理。
  *
  * @author Juergen Hoeller
  * @author Brian Clozel

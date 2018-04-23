@@ -16,12 +16,12 @@
 
 package org.springframework.web.servlet.mvc;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.lang.Nullable;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.ModelAndView;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Adapter to use the plain {@link Controller} workflow interface with
@@ -29,6 +29,7 @@ import org.springframework.web.servlet.ModelAndView;
  * Supports handlers that implement the {@link LastModified} interface.
  *
  * <p>This is an SPI class, not used directly by application code.
+ * <p>这是一个SPI类，应用代码不直接使用。
  *
  * @author Rod Johnson
  * @author Juergen Hoeller
@@ -37,6 +38,8 @@ import org.springframework.web.servlet.ModelAndView;
  * @see LastModified
  * @see HttpRequestHandlerAdapter
  */
+// 该类没有封装数据，纯粹是个方法的命名空间（方法名前缀、方法组名）。
+// 该类的所有操作都是委托给原始处理器这个入参完成的。
 public class SimpleControllerHandlerAdapter implements HandlerAdapter {
 
 	@Override
@@ -44,6 +47,7 @@ public class SimpleControllerHandlerAdapter implements HandlerAdapter {
 		return (handler instanceof Controller);
 	}
 
+	// 委托给Controller类型的原始处理器
 	@Override
 	@Nullable
 	public ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler)
@@ -52,6 +56,7 @@ public class SimpleControllerHandlerAdapter implements HandlerAdapter {
 		return ((Controller) handler).handleRequest(request, response);
 	}
 
+	// 委托给支持Last-Modified缓存机制的原始处理器
 	@Override
 	public long getLastModified(HttpServletRequest request, Object handler) {
 		if (handler instanceof LastModified) {

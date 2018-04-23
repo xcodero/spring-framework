@@ -86,6 +86,10 @@ public interface HandlerInterceptor {
 	 * of any number of interceptors, with the handler itself at the end.
 	 * With this method, each interceptor can decide to abort the execution chain,
 	 * typically sending a HTTP error or writing a custom response.
+	 *
+	 * <p>DispatcherServlet是以执行链的形式封装处理器的。在一个执行链中，可以包含任意数量的拦截器以及最末端的处理器。
+	 * 采用这种方式，任何拦截器都可以终止执行链的执行，典型做法就是发送一个HTTP错误或写入自定义响应。
+	 *
 	 * <p><strong>Note:</strong> special considerations apply for asynchronous
 	 * request processing. For more details see
 	 * {@link org.springframework.web.servlet.AsyncHandlerInterceptor}.
@@ -96,6 +100,8 @@ public interface HandlerInterceptor {
 	 * @return {@code true} if the execution chain should proceed with the
 	 * next interceptor or the handler itself. Else, DispatcherServlet assumes
 	 * that this interceptor has already dealt with the response itself.
+	 *
+	 * <p>如果执行链应继续处理下一个拦截器或最终的处理器，返回true；否则，DispatcherServlet会认为该拦截器已经自己处理完响应。
 	 * @throws Exception in case of errors
 	 */
 	default boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)

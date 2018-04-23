@@ -1021,6 +1021,7 @@ public class DispatcherServlet extends FrameworkServlet {
 				HandlerAdapter ha = getHandlerAdapter(mappedHandler.getHandler());
 
 				// Process last-modified header, if supported by the handler.
+				// 5.LastModified缓存机制
 				String method = request.getMethod();
 				boolean isGet = "GET".equals(method);
 				if (isGet || "HEAD".equals(method)) {
@@ -1033,11 +1034,13 @@ public class DispatcherServlet extends FrameworkServlet {
 					}
 				}
 
+				// 6.应用处理器执行链中所有拦截器的前置处理逻辑
 				if (!mappedHandler.applyPreHandle(processedRequest, response)) {
 					return;
 				}
 
 				// Actually invoke the handler.
+				// 7.调用处理器执行链中最末端的原始处理器
 				mv = ha.handle(processedRequest, response, mappedHandler.getHandler());
 
 				if (asyncManager.isConcurrentHandlingStarted()) {
@@ -1055,6 +1058,7 @@ public class DispatcherServlet extends FrameworkServlet {
 				// making them available for @ExceptionHandler methods and other scenarios.
 				dispatchException = new NestedServletException("Handler dispatch failed", err);
 			}
+			// 10.处理分派（handler选择和调用）结果——可能是一个ModelAndView实例或Exception实例
 			processDispatchResult(processedRequest, response, mappedHandler, mv, dispatchException);
 		}
 		catch (Exception ex) {
@@ -1095,6 +1099,8 @@ public class DispatcherServlet extends FrameworkServlet {
 	/**
 	 * Handle the result of handler selection and handler invocation, which is
 	 * either a ModelAndView or an Exception to be resolved to a ModelAndView.
+	 *
+	 * <p>处理handler选择和调用结果——可能是一个ModelAndView实例，也可能是一个待解析为ModelAndView实例的Exception实例。
 	 */
 	private void processDispatchResult(HttpServletRequest request, HttpServletResponse response,
 			@Nullable HandlerExecutionChain mappedHandler, @Nullable ModelAndView mv,
@@ -1295,6 +1301,9 @@ public class DispatcherServlet extends FrameworkServlet {
 
 	/**
 	 * Determine an error ModelAndView via the registered HandlerExceptionResolvers.
+	 *
+	 * <p>通过注册的HandlerExceptionResolver列表来确定一个表示错误的ModelAndView实例。
+	 *
 	 * @param request current HTTP request
 	 * @param response current HTTP response
 	 * @param handler the executed handler, or {@code null} if none chosen at the time of the exception
@@ -1341,6 +1350,9 @@ public class DispatcherServlet extends FrameworkServlet {
 
 	/**
 	 * Render the given ModelAndView.
+	 *
+	 * <p>渲染给定的ModelAndView实例。
+	 *
 	 * <p>This is the last stage in handling a request. It may involve resolving the view by name.
 	 * @param mv the ModelAndView to render
 	 * @param request current HTTP servlet request

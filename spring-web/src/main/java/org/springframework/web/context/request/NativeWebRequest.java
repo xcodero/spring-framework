@@ -22,8 +22,12 @@ import org.springframework.lang.Nullable;
  * Extension of the {@link WebRequest} interface, exposing the
  * native request and response objects in a generic fashion.
  *
+ * <p>扩展自WebRequest接口，以一种通用风格来暴露原生请求、响应对象。
+ *
  * <p>Mainly intended for framework-internal usage,
  * in particular for generic argument resolution code.
+ *
+ * <p>主要在框架内部使用。
  *
  * @author Juergen Hoeller
  * @since 2.5.2

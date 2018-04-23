@@ -16,15 +16,15 @@
 
 package org.springframework.web.servlet.mvc;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import org.springframework.http.HttpMethod;
 import org.springframework.lang.Nullable;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.support.WebContentGenerator;
 import org.springframework.web.util.WebUtils;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 /**
  * Convenient superclass for controller implementations, using the Template Method
@@ -169,17 +169,22 @@ public abstract class AbstractController extends WebContentGenerator implements 
 			if (session != null) {
 				Object mutex = WebUtils.getSessionMutex(session);
 				synchronized (mutex) {
+					// 调用用户的逻辑
 					return handleRequestInternal(request, response);
 				}
 			}
 		}
 
+		// 调用用户的逻辑
 		return handleRequestInternal(request, response);
 	}
 
 	/**
 	 * Template method. Subclasses must implement this.
 	 * The contract is the same as for {@code handleRequest}.
+	 *
+	 * <p>模板方法。
+	 *
 	 * @see #handleRequest
 	 */
 	@Nullable
