@@ -22,9 +22,14 @@ import javax.servlet.http.HttpServletRequest;
  * Supports last-modified HTTP requests to facilitate content caching.
  * Same contract as for the Servlet API's {@code getLastModified} method.
  *
+ * <p>支持last-modified类型的HTTP请求方便内容缓存。
+ *
  * <p>Delegated to by a {@link org.springframework.web.servlet.HandlerAdapter#getLastModified}
  * implementation. By default, any Controller or HttpRequestHandler within Spring's
  * default framework can implement this interface to enable last-modified checking.
+ *
+ * <p>在{@link org.springframework.web.servlet.HandlerAdapter#getLastModified}实现中会委托给LastModified#getLastModified。
+ * Spring框架内的任何Controller或HttpRequestHandler都可以实现该接口来启用last-modified校验。
  *
  * <p><b>Note:</b> Alternative handler implementation approaches have different
  * last-modified handling styles. For example, Spring 2.5's annotated controller
