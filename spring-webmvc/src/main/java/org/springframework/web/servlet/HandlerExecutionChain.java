@@ -165,6 +165,8 @@ public class HandlerExecutionChain {
 	 * Will just invoke afterCompletion for all interceptors whose preHandle invocation
 	 * has successfully completed and returned true.
 	 */
+	// 触发该处理器执行链中所有拦截器的afterCompletion回调逻辑。
+	// 注意：只触发preHandle方法成功执行且返回true的那些拦截器的afterCompletion回调。
 	void triggerAfterCompletion(HttpServletRequest request, HttpServletResponse response, @Nullable Exception ex)
 			throws Exception {
 

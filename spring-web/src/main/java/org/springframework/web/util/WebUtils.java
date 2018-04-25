@@ -68,6 +68,9 @@ public abstract class WebUtils {
 	 * <p>To be exposed to JSPs that are marked as error pages, when forwarding
 	 * to them directly rather than through the servlet container's error page
 	 * resolution mechanism.
+	 *
+	 * <p>Servlet 2.3+ 标准规范中错误页面的请求属性。</p>
+	 * <p>当直接转发到错误页面而非通过servlet容器的错误页解析机制时，需要将这些属性暴露给标记为错误页面的JSP页面。</p>
 	 */
 	public static final String ERROR_STATUS_CODE_ATTRIBUTE = "javax.servlet.error.status_code";
 	public static final String ERROR_EXCEPTION_TYPE_ATTRIBUTE = "javax.servlet.error.exception_type";

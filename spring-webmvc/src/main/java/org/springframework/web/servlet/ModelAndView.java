@@ -16,12 +16,12 @@
 
 package org.springframework.web.servlet;
 
-import java.util.Map;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.lang.Nullable;
 import org.springframework.ui.ModelMap;
 import org.springframework.util.CollectionUtils;
+
+import java.util.Map;
 
 /**
  * Holder for both Model and View in the web MVC framework.
@@ -48,7 +48,7 @@ public class ModelAndView {
 
 	/** View instance or view name String */
 	@Nullable
-	private Object view;
+	private Object view; // Object类型变量，可能引用Sring实例或View实例。
 
 	/** Model Map */
 	@Nullable
@@ -331,6 +331,7 @@ public class ModelAndView {
 	 * Return whether this ModelAndView object is empty,
 	 * i.e. whether it does not hold any view and does not contain a model.
 	 */
+	// 既没有视图信息（视图名或视图实例）、也没有模型数据（模型Map）
 	public boolean isEmpty() {
 		return (this.view == null && CollectionUtils.isEmpty(this.model));
 	}

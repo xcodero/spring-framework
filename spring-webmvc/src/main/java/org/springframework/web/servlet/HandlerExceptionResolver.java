@@ -16,10 +16,10 @@
 
 package org.springframework.web.servlet;
 
+import org.springframework.lang.Nullable;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.lang.Nullable;
 
 /**
  * Interface to be implemented by objects that can resolve exceptions thrown during
@@ -49,6 +49,8 @@ public interface HandlerExceptionResolver {
 	 * @return a corresponding {@code ModelAndView} to forward to, or {@code null}
 	 * for default processing
 	 */
+	// 如果合适的话，返回一个表示特定错误页面的ModelAndView实例。
+	// 返回的ModelAndView实例可能是空的（既无视图信息也无模型数据），这表明异常已被成功解析但没有视图需要渲染，例如只设置下状态码。
 	@Nullable
 	ModelAndView resolveException(
 			HttpServletRequest request, HttpServletResponse response, @Nullable Object handler, Exception ex);

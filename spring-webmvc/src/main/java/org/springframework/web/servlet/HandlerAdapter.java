@@ -75,6 +75,7 @@ public interface HandlerAdapter {
 	 * @return ModelAndView object with the name of the view and the required
 	 * model data, or {@code null} if the request has been handled directly
 	 */
+	// 返回封装视图名和模型数据的ModelAndView对象；或者，当请求被直接处理过时返回null。
 	@Nullable
 	ModelAndView handle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception;
 

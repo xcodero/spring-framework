@@ -1047,7 +1047,9 @@ public class DispatcherServlet extends FrameworkServlet {
 					return;
 				}
 
+				// 8.如果原始处理器返回了ModelAndView实例但未设置视图域，将其设置为RequestToViewNameTranslator#getViewName提供的视图名
 				applyDefaultViewName(processedRequest, mv);
+				// 9.应用处理器执行链中所有拦截器的后置处理逻辑
 				mappedHandler.applyPostHandle(processedRequest, response, mv);
 			}
 			catch (Exception ex) {
@@ -1088,6 +1090,7 @@ public class DispatcherServlet extends FrameworkServlet {
 	 * Do we need view name translation?
 	 */
 	private void applyDefaultViewName(HttpServletRequest request, @Nullable ModelAndView mv) throws Exception {
+		// 如果ModelAndView实例中的视图域未设值，将其设置为RequestToViewNameTranslator#getViewName提供的视图名
 		if (mv != null && !mv.hasView()) {
 			String defaultViewName = getDefaultViewName(request);
 			if (defaultViewName != null) {
@@ -1108,6 +1111,7 @@ public class DispatcherServlet extends FrameworkServlet {
 
 		boolean errorView = false;
 
+		// 如果handler选择和调用过程中发生异常
 		if (exception != null) {
 			if (exception instanceof ModelAndViewDefiningException) {
 				logger.debug("ModelAndViewDefiningException encountered", exception);
@@ -1115,14 +1119,17 @@ public class DispatcherServlet extends FrameworkServlet {
 			}
 			else {
 				Object handler = (mappedHandler != null ? mappedHandler.getHandler() : null);
+				// 利用注册的HandlerExceptionResolver列表得到一个表示错误的ModelAndView实例。
 				mv = processHandlerException(request, response, handler, exception);
-				errorView = (mv != null);
+				errorView = (mv != null); // 解析得到的ModelAndView实例不空
 			}
 		}
 
 		// Did the handler return a view to render?
 		if (mv != null && !mv.wasCleared()) {
+			// 渲染ModelAndView实例
 			render(mv, request, response);
+			// 对于处理器异常解析器解析出的ModelAndView实例渲染完毕后，要移除请求中的相关属性
 			if (errorView) {
 				WebUtils.clearErrorRequestAttributes(request);
 			}
@@ -1139,6 +1146,7 @@ public class DispatcherServlet extends FrameworkServlet {
 			return;
 		}
 
+		// 触发处理器执行链中拦截器的afterCompletion回调
 		if (mappedHandler != null) {
 			mappedHandler.triggerAfterCompletion(request, response, null);
 		}
@@ -1318,20 +1326,25 @@ public class DispatcherServlet extends FrameworkServlet {
 
 		// Check registered HandlerExceptionResolvers...
 		ModelAndView exMv = null;
+		// 1.使用注册的处理器异常解析器挨个尝试解析传入的异常
 		if (this.handlerExceptionResolvers != null) {
 			for (HandlerExceptionResolver handlerExceptionResolver : this.handlerExceptionResolvers) {
 				exMv = handlerExceptionResolver.resolveException(request, response, handler, ex);
+				// 异常解析成功
 				if (exMv != null) {
 					break;
 				}
 			}
 		}
+		// 2.如果该异常解析成功，处理解析得到的结果
 		if (exMv != null) {
+			// 2.1 无视图信息和模型数据的情况下，将异常绑定到请求的属性上，并返回null
 			if (exMv.isEmpty()) {
 				request.setAttribute(EXCEPTION_ATTRIBUTE, ex);
 				return null;
 			}
 			// We might still need view name translation for a plain error model...
+			// 2.2 如果即ModelAndView实例的视图域尚未设置，将其设置为RequestToViewNameTranslator#getViewName提供的视图名
 			if (!exMv.hasView()) {
 				String defaultViewName = getDefaultViewName(request);
 				if (defaultViewName != null) {
@@ -1341,10 +1354,12 @@ public class DispatcherServlet extends FrameworkServlet {
 			if (logger.isDebugEnabled()) {
 				logger.debug("Handler execution resulted in exception - forwarding to resolved error view: " + exMv, ex);
 			}
+			// 2.3 暴露当直接转发到错误页面时servlet 2.3+规范中要求的错误页请求属性
 			WebUtils.exposeErrorRequestAttributes(request, ex, getServletName());
 			return exMv;
 		}
 
+		// 如果没有找到ModelAndView实例，继续抛出原异常。
 		throw ex;
 	}
 
