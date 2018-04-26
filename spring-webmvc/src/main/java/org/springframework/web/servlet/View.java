@@ -16,11 +16,11 @@
 
 package org.springframework.web.servlet;
 
-import java.util.Map;
+import org.springframework.lang.Nullable;
+
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.lang.Nullable;
+import java.util.Map;
 
 /**
  * MVC View for a web interaction. Implementations are responsible for rendering
@@ -84,6 +84,8 @@ public interface View {
 
 	/**
 	 * Render the view given the specified model.
+	 * <p>用模型渲染视图。</p>
+	 *
 	 * <p>The first step will be preparing the request: In the JSP case, this would mean
 	 * setting model objects as request attributes. The second step will be the actual
 	 * rendering of the view, for example including the JSP via a RequestDispatcher.

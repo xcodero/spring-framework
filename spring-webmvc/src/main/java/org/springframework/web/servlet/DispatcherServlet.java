@@ -1111,25 +1111,27 @@ public class DispatcherServlet extends FrameworkServlet {
 
 		boolean errorView = false;
 
-		// 如果handler选择和调用过程中发生异常
+		// 1.如果handler选择和调用过程中发生异常，尝试获得ModelAndView实例
 		if (exception != null) {
 			if (exception instanceof ModelAndViewDefiningException) {
 				logger.debug("ModelAndViewDefiningException encountered", exception);
+				// 1.1直接从ModelAndViewDefiningException中提取ModelAndView实例
 				mv = ((ModelAndViewDefiningException) exception).getModelAndView();
 			}
 			else {
 				Object handler = (mappedHandler != null ? mappedHandler.getHandler() : null);
-				// 利用注册的HandlerExceptionResolver列表得到一个表示错误的ModelAndView实例。
+				// 1.2使用注册的HandlerExceptionResolver列表对异常进行解析，得到表示错误的ModelAndView实例
 				mv = processHandlerException(request, response, handler, exception);
 				errorView = (mv != null); // 解析得到的ModelAndView实例不空
 			}
 		}
 
 		// Did the handler return a view to render?
+		// 2.如果原始处理器返回ModevAndView实例，或发生异常时获取到了ModelAndView实例，对ModelAndView实例进行渲染
 		if (mv != null && !mv.wasCleared()) {
-			// 渲染ModelAndView实例
+			// 2.1渲染ModelAndView实例
 			render(mv, request, response);
-			// 对于处理器异常解析器解析出的ModelAndView实例渲染完毕后，要移除请求中的相关属性
+			// 2.2对于处理器异常解析器解析出的ModelAndView实例渲染完毕后，要移除请求中的相关属性
 			if (errorView) {
 				WebUtils.clearErrorRequestAttributes(request);
 			}
@@ -1146,7 +1148,7 @@ public class DispatcherServlet extends FrameworkServlet {
 			return;
 		}
 
-		// 触发处理器执行链中拦截器的afterCompletion回调
+		// 3.触发处理器执行链中拦截器的afterCompletion回调
 		if (mappedHandler != null) {
 			mappedHandler.triggerAfterCompletion(request, response, null);
 		}
@@ -1377,20 +1379,24 @@ public class DispatcherServlet extends FrameworkServlet {
 	 */
 	protected void render(ModelAndView mv, HttpServletRequest request, HttpServletResponse response) throws Exception {
 		// Determine locale for request and apply it to the response.
+		// 1.使用地区解析器对请求进行解析，确定发出请求的地区并设置到响应中
 		Locale locale =
 				(this.localeResolver != null ? this.localeResolver.resolveLocale(request) : request.getLocale());
 		response.setLocale(locale);
 
 		View view;
+		// 2.ModelAndView实例中包含的是视图名，需将视图名解析为View实例
 		String viewName = mv.getViewName();
 		if (viewName != null) {
 			// We need to resolve the view name.
+			// 解析视图名
 			view = resolveViewName(viewName, mv.getModelInternal(), locale, request);
 			if (view == null) {
 				throw new ServletException("Could not resolve view with name '" + mv.getViewName() +
 						"' in servlet with name '" + getServletName() + "'");
 			}
 		}
+		// 3.ModelAndView实例中包含的是真正的View实例，直接使用
 		else {
 			// No need to lookup: the ModelAndView object contains the actual View object.
 			view = mv.getView();
@@ -1404,10 +1410,12 @@ public class DispatcherServlet extends FrameworkServlet {
 		if (logger.isDebugEnabled()) {
 			logger.debug("Rendering view [" + view + "] in DispatcherServlet with name '" + getServletName() + "'");
 		}
+		// 4.设置响应状态码，使用模型渲染视图
 		try {
 			if (mv.getStatus() != null) {
 				response.setStatus(mv.getStatus().value());
 			}
+			// 委托View实例进行渲染
 			view.render(mv.getModelInternal(), request, response);
 		}
 		catch (Exception ex) {
@@ -1432,9 +1440,15 @@ public class DispatcherServlet extends FrameworkServlet {
 
 	/**
 	 * Resolve the given view name into a View object (to be rendered).
+	 * <p>将给定视图名解析为（待渲染的）View对象。</p>
+	 *
 	 * <p>The default implementations asks all ViewResolvers of this dispatcher.
 	 * Can be overridden for custom resolution strategies, potentially based on
 	 * specific model attributes or request parameters.
+	 * <p>该方法的默认实现如下：使用该分派器中注册的所有视图解析器挨个解析，一旦解析成功就返回。
+	 * 该方法可以被覆盖，从而自定义视图名解析策略——可能基于指定的模型属性或请求参数。
+	 * </p>
+	 *
 	 * @param viewName the name of the view to resolve
 	 * @param model the model to be passed to the view
 	 * @param locale the current locale

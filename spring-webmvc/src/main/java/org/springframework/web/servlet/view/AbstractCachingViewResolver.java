@@ -16,18 +16,17 @@
 
 package org.springframework.web.servlet.view;
 
-import java.util.LinkedHashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.lang.Nullable;
 import org.springframework.web.context.support.WebApplicationObjectSupport;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.LinkedHashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Convenient base class for {@link org.springframework.web.servlet.ViewResolver}
@@ -48,6 +47,7 @@ public abstract class AbstractCachingViewResolver extends WebApplicationObjectSu
 	public static final int DEFAULT_CACHE_LIMIT = 1024;
 
 	/** Dummy marker object for unresolved views in the cache Maps */
+	// 缓存中未解析视图的虚拟（标记）对象。
 	private static final View UNRESOLVED_VIEW = new View() {
 		@Override
 		@Nullable
@@ -64,6 +64,7 @@ public abstract class AbstractCachingViewResolver extends WebApplicationObjectSu
 	private volatile int cacheLimit = DEFAULT_CACHE_LIMIT;
 
 	/** Whether we should refrain from resolving views again if unresolved once */
+	// 应避免再次解析曾未能解析的视图吗？
 	private boolean cacheUnresolved = true;
 
 	/** Fast access cache for Views, returning already cached instances without a global lock */
@@ -146,21 +147,29 @@ public abstract class AbstractCachingViewResolver extends WebApplicationObjectSu
 	@Override
 	@Nullable
 	public View resolveViewName(String viewName, Locale locale) throws Exception {
+		// 1.如果不使用缓存，直接创建View实例
 		if (!isCache()) {
 			return createView(viewName, locale);
 		}
+		// 2.如果使用缓存，
 		else {
+			// 2.1 根据视图名和地区构建缓存键，从viewAccessCache中查找
 			Object cacheKey = getCacheKey(viewName, locale);
 			View view = this.viewAccessCache.get(cacheKey);
+			// 2.2 如果viewAccessCache中没有缓存相应的视图实例，从viewCreationCache查找
 			if (view == null) {
 				synchronized (this.viewCreationCache) {
 					view = this.viewCreationCache.get(cacheKey);
+					// 2.3 如果viewCreationCache中也没有缓存相应的视图实例，创建View实例
 					if (view == null) {
 						// Ask the subclass to create the View object.
+						// 创建View实例
 						view = createView(viewName, locale);
+						// 2.4 如果没能创建View实例，且"cacheUnresolved"为真，就缓存虚拟对象，避免再次解析（即创建View实例）
 						if (view == null && this.cacheUnresolved) {
 							view = UNRESOLVED_VIEW;
 						}
+						// 2.5 如果成功创建View实例，同时放入viewAccessCache和viewCreationCache缓存
 						if (view != null) {
 							this.viewAccessCache.put(cacheKey, view);
 							this.viewCreationCache.put(cacheKey, view);
@@ -171,6 +180,7 @@ public abstract class AbstractCachingViewResolver extends WebApplicationObjectSu
 					}
 				}
 			}
+			// 2.6 返回成功创建的View实例或null
 			return (view != UNRESOLVED_VIEW ? view : null);
 		}
 	}
@@ -181,6 +191,7 @@ public abstract class AbstractCachingViewResolver extends WebApplicationObjectSu
 	 * Can be overridden in subclasses.
 	 * <p>Needs to respect the locale in general, as a different locale can
 	 * lead to a different view resource.
+	 * <p>通常需要考虑地区，因为不同地区会对应不同的视图资源。</>
 	 */
 	protected Object getCacheKey(String viewName, Locale locale) {
 		return viewName + '_' + locale;

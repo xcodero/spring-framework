@@ -16,12 +16,6 @@
 
 package org.springframework.web.servlet.view;
 
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Properties;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.BeanUtils;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.Ordered;
@@ -30,6 +24,12 @@ import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.PatternMatchUtils;
 import org.springframework.web.servlet.View;
+
+import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Properties;
 
 /**
  * Simple implementation of the {@link org.springframework.web.servlet.ViewResolver}
@@ -236,6 +236,7 @@ public class UrlBasedViewResolver extends AbstractCachingViewResolver implements
 	 * Return whether to interpret a given redirect URL that starts with a
 	 * slash ("/") as relative to the current ServletContext, i.e. as
 	 * relative to the web application root.
+	 * <p>是否将以斜杠开头的重定向URL解释为"相对于当前ServletContext"，即相对于web应用的根</p>
 	 */
 	protected boolean isRedirectContextRelative() {
 		return this.redirectContextRelative;
@@ -466,10 +467,12 @@ public class UrlBasedViewResolver extends AbstractCachingViewResolver implements
 	protected View createView(String viewName, Locale locale) throws Exception {
 		// If this resolver is not supposed to handle the given view,
 		// return null to pass on to the next resolver in the chain.
+		// 1.如果该解析器不是用来处理给定视图的，返回null
 		if (!canHandle(viewName, locale)) {
 			return null;
 		}
 		// Check for special "redirect:" prefix.
+		// 2.处理前缀为"redirect:"的视图名
 		if (viewName.startsWith(REDIRECT_URL_PREFIX)) {
 			String redirectUrl = viewName.substring(REDIRECT_URL_PREFIX.length());
 			RedirectView view = new RedirectView(redirectUrl, isRedirectContextRelative(), isRedirectHttp10Compatible());
@@ -480,6 +483,7 @@ public class UrlBasedViewResolver extends AbstractCachingViewResolver implements
 			return applyLifecycleMethods(viewName, view);
 		}
 		// Check for special "forward:" prefix.
+		// 3.处理前缀为"forward:"的视图名
 		if (viewName.startsWith(FORWARD_URL_PREFIX)) {
 			String forwardUrl = viewName.substring(FORWARD_URL_PREFIX.length());
 			return new InternalResourceView(forwardUrl);
@@ -544,6 +548,7 @@ public class UrlBasedViewResolver extends AbstractCachingViewResolver implements
 		Assert.state(viewClass != null, "No view class");
 
 		AbstractUrlBasedView view = (AbstractUrlBasedView) BeanUtils.instantiateClass(viewClass);
+		// 添加前缀和后缀
 		view.setUrl(getPrefix() + viewName + getSuffix());
 
 		String contentType = getContentType();
