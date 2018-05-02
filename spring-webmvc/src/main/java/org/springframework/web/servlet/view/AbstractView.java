@@ -16,20 +16,6 @@
 
 package org.springframework.web.servlet.view;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Properties;
-import java.util.Set;
-import java.util.StringTokenizer;
-import javax.servlet.ServletOutputStream;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.BeanNameAware;
 import org.springframework.http.MediaType;
 import org.springframework.lang.Nullable;
@@ -40,6 +26,13 @@ import org.springframework.web.context.support.ContextExposingHttpServletRequest
 import org.springframework.web.context.support.WebApplicationObjectSupport;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.support.RequestContext;
+
+import javax.servlet.ServletOutputStream;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.*;
 
 /**
  * Abstract base class for {@link org.springframework.web.servlet.View}
@@ -318,6 +311,7 @@ public abstract class AbstractView extends WebApplicationObjectSupport implement
 	 * Creates a combined output Map (never {@code null}) that includes dynamic values and static attributes.
 	 * Dynamic values take precedence over static attributes.
 	 */
+	// 创建一个组合的输出map——既包括动态值，也包括静态属性（动态值的优先级高于静态属性）
 	protected Map<String, Object> createMergedOutputModel(@Nullable Map<String, ?> model,
 			HttpServletRequest request, HttpServletResponse response) {
 
@@ -330,16 +324,21 @@ public abstract class AbstractView extends WebApplicationObjectSupport implement
 		size += (model != null ? model.size() : 0);
 		size += (pathVars != null ? pathVars.size() : 0);
 
+		// 1.新建存放合并结果的map
 		Map<String, Object> mergedModel = new LinkedHashMap<>(size);
+		// 2.放入静态属性
 		mergedModel.putAll(this.staticAttributes);
+		// 3.放入路径变量
 		if (pathVars != null) {
 			mergedModel.putAll(pathVars);
 		}
+		// 4.放入（动态）模型
 		if (model != null) {
 			mergedModel.putAll(model);
 		}
 
 		// Expose RequestContext?
+		// 5.放入请求上下文
 		if (this.requestContextAttribute != null) {
 			mergedModel.put(this.requestContextAttribute, createRequestContext(request, response, mergedModel));
 		}
@@ -388,6 +387,7 @@ public abstract class AbstractView extends WebApplicationObjectSupport implement
 	 * @see #prepareResponse
 	 * @see javax.servlet.http.HttpServletResponse#getOutputStream()
 	 */
+	// 该视图会产生下载内容（一般是二进制内容，如PDF、Excel文件）吗？
 	protected boolean generatesDownloadContent() {
 		return false;
 	}

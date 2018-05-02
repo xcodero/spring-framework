@@ -16,17 +16,6 @@
 
 package org.springframework.web.servlet.support;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.TimeZone;
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.servlet.jsp.jstl.core.Config;
-
 import org.springframework.context.MessageSource;
 import org.springframework.context.MessageSourceResolvable;
 import org.springframework.context.NoSuchMessageException;
@@ -53,6 +42,13 @@ import org.springframework.web.util.UriTemplate;
 import org.springframework.web.util.UrlPathHelper;
 import org.springframework.web.util.WebUtils;
 
+import javax.servlet.ServletContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+import javax.servlet.jsp.jstl.core.Config;
+import java.util.*;
+
 /**
  * Context holder for request-specific state, like current web application context, current locale,
  * current theme, and potential binding errors. Provides easy access to localized messages and
@@ -73,6 +69,9 @@ import org.springframework.web.util.WebUtils;
  * @see org.springframework.web.servlet.DispatcherServlet
  * @see org.springframework.web.servlet.view.AbstractView#setRequestContextAttribute
  * @see org.springframework.web.servlet.view.UrlBasedViewResolver#setRequestContextAttribute
+ */
+/*
+ * 请求所特有状态的上下文持有器，如当前的web应用上下文、当前地区、当前主题、可能的绑定错误。
  */
 public class RequestContext {
 

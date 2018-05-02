@@ -522,10 +522,16 @@ public class UrlBasedViewResolver extends AbstractCachingViewResolver implements
 	 * @see org.springframework.context.ApplicationContextAware#setApplicationContext
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet
 	 */
+	/*
+	 *
+	 */
 	@Override
 	protected View loadView(String viewName, Locale locale) throws Exception {
+		// 1.构建视图对象——利用反射进行实例化，并配置；
 		AbstractUrlBasedView view = buildView(viewName);
+		// 2.对新创建的视图对象应用当前视图解析器所关联应用上下文的生命周期方法；
 		View result = applyLifecycleMethods(viewName, view);
+		// 3.检查该视图对象中设置的URL所指向的底层资源是否存在，存在则返回视图实例，否则返回null
 		return (view.checkResource(locale) ? result : null);
 	}
 
@@ -543,19 +549,24 @@ public class UrlBasedViewResolver extends AbstractCachingViewResolver implements
 	 * @throws Exception if the view couldn't be resolved
 	 * @see #loadView(String, java.util.Locale)
 	 */
+	// 利用反射的方式创建该视图解析器所包含视图类的对象，并配置该视图对象。
 	protected AbstractUrlBasedView buildView(String viewName) throws Exception {
+		// 1.获取该视图解析器所包含视图类的Class实例
 		Class<?> viewClass = getViewClass();
 		Assert.state(viewClass != null, "No view class");
-
+		// 2.反射的方式实例化试图类
 		AbstractUrlBasedView view = (AbstractUrlBasedView) BeanUtils.instantiateClass(viewClass);
-		// 添加前缀和后缀
+		// 3.配置新创建的视图对象
+		// 3.1 设置该视图所包装资源的URL（添加前缀和后缀）
 		view.setUrl(getPrefix() + viewName + getSuffix());
 
+		// 3.2 设置内容类型
 		String contentType = getContentType();
 		if (contentType != null) {
 			view.setContentType(contentType);
 		}
 
+		// 3.3 各种设置...
 		view.setRequestContextAttribute(getRequestContextAttribute());
 		view.setAttributesMap(getAttributesMap());
 
@@ -588,6 +599,7 @@ public class UrlBasedViewResolver extends AbstractCachingViewResolver implements
 	 * @see ApplicationContext#getAutowireCapableBeanFactory()
 	 * @see org.springframework.beans.factory.config.AutowireCapableBeanFactory#initializeBean
 	 */
+	// 如果该视图解析器关联了应用上下文实例，则对传入的View实例应用ApplicationContext实例的生命周期方法。
 	protected View applyLifecycleMethods(String viewName, AbstractUrlBasedView view) {
 		ApplicationContext context = getApplicationContext();
 		if (context != null) {

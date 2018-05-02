@@ -255,6 +255,7 @@ public abstract class AbstractCachingViewResolver extends WebApplicationObjectSu
 	 * @throws Exception if the view couldn't be resolved
 	 * @see #loadView
 	 */
+	// 真正地根据视图名
 	@Nullable
 	protected View createView(String viewName, Locale locale) throws Exception {
 		return loadView(viewName, locale);

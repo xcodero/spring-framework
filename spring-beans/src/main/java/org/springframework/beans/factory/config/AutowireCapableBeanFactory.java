@@ -268,6 +268,9 @@ public interface AutowireCapableBeanFactory extends BeanFactory {
 	 * @return the bean instance to use, either the original or a wrapped one
 	 * @throws BeansException if the initialization failed
 	 */
+	/*
+	 * 初始化给定的原始bean，并应用工厂中的回调逻辑和所有的bean后处理器。
+	 */
 	Object initializeBean(Object existingBean, String beanName) throws BeansException;
 
 	/**

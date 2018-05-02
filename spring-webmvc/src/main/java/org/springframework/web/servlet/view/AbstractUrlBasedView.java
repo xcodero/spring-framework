@@ -16,10 +16,10 @@
 
 package org.springframework.web.servlet.view;
 
-import java.util.Locale;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.lang.Nullable;
+
+import java.util.Locale;
 
 /**
  * Abstract base class for URL-based views. Provides a consistent way of
@@ -89,6 +89,7 @@ public abstract class AbstractUrlBasedView extends AbstractView implements Initi
 	 * {@code false} if we know that it does not exist
 	 * @throws Exception if the resource exists but is invalid (e.g. could not be parsed)
 	 */
+	// 检查该视图对象中设置的URL所指向的底层资源是否存在
 	public boolean checkResource(Locale locale) throws Exception {
 		return true;
 	}
