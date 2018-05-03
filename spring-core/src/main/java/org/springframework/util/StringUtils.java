@@ -595,6 +595,7 @@ public abstract class StringUtils {
 	 * (relative to the full file path above)
 	 * @return the full file path that results from applying the relative path
 	 */
+	// 将相对路径连接到完全文件路径后面，形成新的完全文件路径
 	public static String applyRelativePath(String path, String relativePath) {
 		int separatorIndex = path.lastIndexOf(FOLDER_SEPARATOR);
 		if (separatorIndex != -1) {

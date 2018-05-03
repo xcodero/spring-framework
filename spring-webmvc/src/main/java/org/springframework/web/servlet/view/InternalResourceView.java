@@ -133,29 +133,39 @@ public class InternalResourceView extends AbstractUrlBasedView {
 	 * Render the internal resource given the specified model.
 	 * This includes setting the model as request attributes.
 	 */
+	// 主要分两步：将数据暴露为request的属性、执行页面跳转
 	@Override
 	protected void renderMergedOutputModel(
 			Map<String, Object> model, HttpServletRequest request, HttpServletResponse response) throws Exception {
 
 		// Expose the model object as request attributes.
-		// 将模型对象中的数据以属性的方式设置到request中
+		// 1.将模型对象中的数据以属性的方式转移到request中
 		exposeModelAsRequestAttributes(model, request);
 
 		// Expose helpers as request attributes, if any.
+		// 2.将不同渲染操作独有的辅助数据暴露为request中的属性
 		exposeHelpers(request);
 
 		// Determine the path for the request dispatcher.
+		// 3.准备工作，主要是确定目标资源的路径
 		String dispatcherPath = prepareForRendering(request, response);
 
 		// Obtain a RequestDispatcher for the target resource (typically a JSP).
+		// 4.获取目标资源（如JSP）的包装器RequestDispatcher
 		RequestDispatcher rd = getRequestDispatcher(request, dispatcherPath);
+		/* 提示：
+		 * a) javax.servlet.RequestDispatcher是服务器端位于特定路径或给定特定名称的资源的包装器，如servlet、JSP文件、HTML文件；
+		 * b) 请求分派器（本质是服务器资源包装器）只有两个方法：forward、include，代表了服务器资源之间的关系。
+		 */
 		if (rd == null) {
 			throw new ServletException("Could not get RequestDispatcher for [" + getUrl() +
 					"]: Check that the corresponding file exists within your web application archive!");
 		}
 
 		// If already included or response already committed, perform include, else forward.
+		// 5.判断是使用RequestDispatcher的include方法还是forward方法
 		if (useInclude(request, response)) {
+			// 5.1先设置内容类型，再include
 			response.setContentType(getContentType());
 			if (logger.isDebugEnabled()) {
 				logger.debug("Including resource [" + getUrl() + "] in InternalResourceView '" + getBeanName() + "'");
@@ -165,6 +175,7 @@ public class InternalResourceView extends AbstractUrlBasedView {
 
 		else {
 			// Note: The forwarded resource is supposed to determine the content type itself.
+			// 5.2直接forward，由目标资源设置内容类型
 			if (logger.isDebugEnabled()) {
 				logger.debug("Forwarding to resource [" + getUrl() + "] in InternalResourceView '" + getBeanName() + "'");
 			}
@@ -183,6 +194,8 @@ public class InternalResourceView extends AbstractUrlBasedView {
 	 * @see #renderMergedOutputModel
 	 * @see JstlView#exposeHelpers
 	 */
+	// 1.将辅助数据以请求属性的形式暴露出来，这些属性都是不同渲染操作独有的；
+	// 2.该方法为继承而设计，子类可以增加自定义的辅助数据作为请求中的属性
 	protected void exposeHelpers(HttpServletRequest request) throws Exception {
 	}
 
@@ -226,6 +239,7 @@ public class InternalResourceView extends AbstractUrlBasedView {
 	 */
 	@Nullable
 	protected RequestDispatcher getRequestDispatcher(HttpServletRequest request, String path) {
+		// 从HttpServletRequest实例中获取指定资源的包装器
 		return request.getRequestDispatcher(path);
 	}
 
@@ -243,6 +257,7 @@ public class InternalResourceView extends AbstractUrlBasedView {
 	 * @see javax.servlet.ServletResponse#isCommitted
 	 * @see org.springframework.web.util.WebUtils#isIncludeRequest
 	 */
+	//
 	protected boolean useInclude(HttpServletRequest request, HttpServletResponse response) {
 		return (this.alwaysInclude || WebUtils.isIncludeRequest(request) || response.isCommitted());
 	}

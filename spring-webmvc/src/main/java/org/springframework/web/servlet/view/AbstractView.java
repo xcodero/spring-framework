@@ -293,6 +293,9 @@ public abstract class AbstractView extends WebApplicationObjectSupport implement
 	 * Delegates to renderMergedOutputModel for the actual rendering.
 	 * @see #renderMergedOutputModel
 	 */
+	/*
+	 *
+	 */
 	@Override
 	public void render(@Nullable Map<String, ?> model, HttpServletRequest request,
 			HttpServletResponse response) throws Exception {
@@ -301,9 +304,12 @@ public abstract class AbstractView extends WebApplicationObjectSupport implement
 			logger.trace("Rendering view with name '" + this.beanName + "' with model " + model +
 				" and static attributes " + this.staticAttributes);
 		}
-
+		// 1.创建合并的输出模型（静态属性、路径变量、动态模型、请求上下文）
 		Map<String, Object> mergedModel = createMergedOutputModel(model, request, response);
+		// 2.先处理下响应
 		prepareResponse(request, response);
+		// 3.将web应用上下文以请求中属性的方式暴露出来——即从视图中可以获取到
+		// 4.缀上合并的输出模型
 		renderMergedOutputModel(mergedModel, getRequestToExpose(request), response);
 	}
 

@@ -16,19 +16,19 @@
 
 package org.springframework.web.servlet.support;
 
-import java.util.Locale;
-import java.util.ResourceBundle;
-import java.util.TimeZone;
+import org.springframework.context.MessageSource;
+import org.springframework.context.support.MessageSourceResourceBundle;
+import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.lang.Nullable;
+
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import javax.servlet.jsp.jstl.core.Config;
 import javax.servlet.jsp.jstl.fmt.LocalizationContext;
-
-import org.springframework.context.MessageSource;
-import org.springframework.context.support.MessageSourceResourceBundle;
-import org.springframework.context.support.ResourceBundleMessageSource;
-import org.springframework.lang.Nullable;
+import java.util.Locale;
+import java.util.ResourceBundle;
+import java.util.TimeZone;
 
 /**
  * Helper class for preparing JSTL views,
@@ -36,6 +36,9 @@ import org.springframework.lang.Nullable;
  *
  * @author Juergen Hoeller
  * @since 20.08.2003
+ */
+/*
+ * 准备JSTL视图的辅助类，尤其用于暴露JSTL本地化上下文
  */
 public abstract class JstlUtils {
 
@@ -114,6 +117,10 @@ public abstract class JstlUtils {
 	/**
 	 * Spring-specific LocalizationContext adapter that merges session-scoped
 	 * JSTL LocalizationContext/Locale attributes with the local Spring request context.
+	 */
+	/*
+	 * 1.Spring专用的"本地化上下文"适配器；
+	 * 2.它会优先从session中提取LocalizationContext和Locale属性；提取不到时再从请求中解析。
 	 */
 	private static class SpringLocalizationContext extends LocalizationContext {
 
