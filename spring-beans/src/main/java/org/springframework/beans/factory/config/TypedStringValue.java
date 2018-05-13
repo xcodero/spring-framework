@@ -35,6 +35,8 @@ import org.springframework.util.ObjectUtils;
  * @see BeanDefinition#getPropertyValues
  * @see org.springframework.beans.MutablePropertyValues#addPropertyValue
  */
+// 1.有类型的字符串值持有器
+// 2.该持有器只是存储String类型的值和目标类型，真正的转换是由bean工厂进行的
 public class TypedStringValue implements BeanMetadataElement {
 
 	@Nullable

@@ -28,7 +28,7 @@ import org.springframework.util.ObjectUtils;
  * @since 2.5
  */
 // 除了封装一个键值对，还封装了定义source。
-// 正式为了封装定义source，才需要引入该类
+// 正是为了封装定义source，才需要引入该类。
 public class BeanMetadataAttribute implements BeanMetadataElement {
 
 	private final String name;

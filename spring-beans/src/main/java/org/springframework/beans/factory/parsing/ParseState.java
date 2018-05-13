@@ -16,9 +16,9 @@
 
 package org.springframework.beans.factory.parsing;
 
-import java.util.LinkedList;
-
 import org.springframework.lang.Nullable;
+
+import java.util.LinkedList;
 
 /**
  * Simple {@link LinkedList}-based structure for tracking the logical position during
@@ -32,6 +32,8 @@ import org.springframework.lang.Nullable;
  * @author Rob Harrop
  * @since 2.0
  */
+// 1.解析状态——用于追踪解析过程中的逻辑位置
+// 2.底层是一个LinkedList
 public final class ParseState {
 
 	/**
@@ -117,6 +119,7 @@ public final class ParseState {
 	/**
 	 * Marker interface for entries into the {@link ParseState}.
 	 */
+	// 标记接口，表示可放入ParseState的实体
 	public interface Entry {
 
 	}

@@ -25,6 +25,7 @@ import org.springframework.lang.Nullable;
  * @author Juergen Hoeller
  * @since 2.0
  */
+// bean元数据元素——表示携带一个配置源对象
 public interface BeanMetadataElement {
 
 	/**

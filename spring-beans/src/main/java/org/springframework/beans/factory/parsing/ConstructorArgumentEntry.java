@@ -26,6 +26,7 @@ import org.springframework.util.Assert;
  * @author Juergen Hoeller
  * @since 2.0
  */
+// （可能含索引的）构造器参数实体，是解析状态实体的一种
 public class ConstructorArgumentEntry implements ParseState.Entry {
 
 	private final int index;

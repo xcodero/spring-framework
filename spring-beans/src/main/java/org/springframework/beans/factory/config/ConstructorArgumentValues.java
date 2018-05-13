@@ -16,20 +16,14 @@
 
 package org.springframework.beans.factory.config;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.springframework.beans.BeanMetadataElement;
 import org.springframework.beans.Mergeable;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
+
+import java.util.*;
 
 /**
  * Holder for constructor argument values, typically as part of a bean definition.
@@ -41,6 +35,8 @@ import org.springframework.util.ObjectUtils;
  * @since 09.11.2003
  * @see BeanDefinition#getConstructorArgumentValues
  */
+// 构造器参数值持有器，用作bean定义的一部分
+// 既支持根据构造器参数列表index匹配的值，也支持根据类型匹配的值
 public class ConstructorArgumentValues {
 
 	private final Map<Integer, ValueHolder> indexedArgumentValues = new LinkedHashMap<>(0);

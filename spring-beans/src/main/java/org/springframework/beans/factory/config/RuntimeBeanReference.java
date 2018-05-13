@@ -28,6 +28,7 @@ import org.springframework.util.Assert;
  * @see BeanDefinition#getPropertyValues()
  * @see org.springframework.beans.factory.BeanFactory#getBean
  */
+// 不可变的占位符类，表示注入值是工厂中另一个bean的引用（在运行时解析）
 public class RuntimeBeanReference implements BeanReference {
 
 	private final String beanName;
