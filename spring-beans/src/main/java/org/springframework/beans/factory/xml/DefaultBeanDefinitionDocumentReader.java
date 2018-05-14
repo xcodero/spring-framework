@@ -313,7 +313,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 		BeanDefinitionHolder bdHolder = delegate.parseBeanDefinitionElement(ele);
 		if (bdHolder != null) {
 			// 2. 解析自定义标签子元素
-			bdHolder = delegate.decorateBeanDefinitionIfRequired(ele, bdHolder);
+			bdHolder = delegate.decorateBeanDefinitionIfRequired(ele, bdHolder); // 如果需要的话就对bean定义进行装饰
 			try {
 				// Register the final decorated instance.
 				// 3. 注册bean定义，委托给BeanDefinitionReaderUtils工具类的静态方法完成

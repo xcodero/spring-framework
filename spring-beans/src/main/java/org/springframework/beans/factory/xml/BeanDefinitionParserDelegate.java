@@ -1430,6 +1430,7 @@ public class BeanDefinitionParserDelegate {
 	}
 
 	public BeanDefinitionHolder decorateBeanDefinitionIfRequired(Element ele, BeanDefinitionHolder definitionHolder) {
+		// 对于普通的bean定义，containingBd传null；只有对嵌套的bean定义，外围bean定义才不为null
 		return decorateBeanDefinitionIfRequired(ele, definitionHolder, null);
 	}
 
@@ -1439,6 +1440,7 @@ public class BeanDefinitionParserDelegate {
 		BeanDefinitionHolder finalDefinition = definitionHolder;
 
 		// Decorate based on custom attributes first.
+		// 1.遍历<bean/>元素的所有属性，如果需要就进行装饰
 		NamedNodeMap attributes = ele.getAttributes();
 		for (int i = 0; i < attributes.getLength(); i++) {
 			Node node = attributes.item(i);
@@ -1446,6 +1448,7 @@ public class BeanDefinitionParserDelegate {
 		}
 
 		// Decorate based on custom nested elements.
+		// 2.遍历<bean/>元素的所有子元素，如果需要就进行装饰
 		NodeList children = ele.getChildNodes();
 		for (int i = 0; i < children.getLength(); i++) {
 			Node node = children.item(i);
@@ -1456,13 +1459,21 @@ public class BeanDefinitionParserDelegate {
 		return finalDefinition;
 	}
 
+	/*
+	 * 1.如果是自定义的命名空间，则使用命名空间处理器对BeanDefinitionHolder进行装饰；
+	 * 2.否则，返回原来的BeanDefinitionHolder。
+	 */
 	public BeanDefinitionHolder decorateIfRequired(
 			Node node, BeanDefinitionHolder originalDef, @Nullable BeanDefinition containingBd) {
 
+		// 1.获取属性或子元素节点的命名空间
 		String namespaceUri = getNamespaceURI(node);
+		// 2.如果是自定义标签，对BeanDefinitionHolder进行装饰，返回装饰后的BeanDefinitionHolder实例
 		if (namespaceUri != null && !isDefaultNamespace(namespaceUri)) {
+			// 2.1 对命名空间进行解析，得到命名空间处理器
 			NamespaceHandler handler = this.readerContext.getNamespaceHandlerResolver().resolve(namespaceUri);
 			if (handler != null) {
+				// 2.2 使用命名空间处理器对BeanDefinitionHolder进行装饰
 				BeanDefinitionHolder decorated =
 						handler.decorate(node, originalDef, new ParserContext(this.readerContext, this, containingBd));
 				if (decorated != null) {
@@ -1479,6 +1490,7 @@ public class BeanDefinitionParserDelegate {
 				}
 			}
 		}
+		// 3.否则，直接返回原来的BeanDefinitionHolder实例
 		return originalDef;
 	}
 

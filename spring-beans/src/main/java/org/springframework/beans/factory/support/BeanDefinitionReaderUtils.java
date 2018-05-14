@@ -72,8 +72,8 @@ public class BeanDefinitionReaderUtils {
 
 	/**
 	 * Generate a bean name for the given top-level bean definition,
-	 * unique within the given bean factory.
-	 * @param beanDefinition the bean definition to generate a bean name for
+	 * unique within the given bean factoÅry.
+	 * @param beanDefinition thÅe bean definition to generate a bean name for
 	 * @param registry the bean factory that the definition is going to be
 	 * registered with (to check for existing bean names)
 	 * @return the generated bean name
