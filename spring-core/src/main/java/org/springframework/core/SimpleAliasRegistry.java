@@ -201,6 +201,8 @@ public class SimpleAliasRegistry implements AliasRegistry {
 	 * @param name the user-specified name
 	 * @return the transformed name
 	 */
+	// 将别名转换为标准名称，
+	// 即alias -> ... -> name，由alias一直找到name
 	public String canonicalName(String name) {
 		String canonicalName = name;
 		// Handle aliasing...

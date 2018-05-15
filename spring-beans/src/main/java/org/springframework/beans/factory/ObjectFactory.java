@@ -35,6 +35,9 @@ import org.springframework.beans.BeansException;
  * @since 1.0.2
  * @see FactoryBean
  */
+// 1.表示一个工厂，被调用时返回一个共享的或独立的T实例
+// 2.该接口的典型用途是用于封装每次调用都返回一个新实例（原型）的一般工厂
+// 3.与FactoryBean接口的异同
 @FunctionalInterface
 public interface ObjectFactory<T> {
 
