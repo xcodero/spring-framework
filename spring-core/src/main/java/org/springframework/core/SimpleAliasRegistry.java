@@ -46,22 +46,28 @@ public class SimpleAliasRegistry implements AliasRegistry {
 		Assert.hasText(name, "'name' must not be empty");
 		Assert.hasText(alias, "'alias' must not be empty");
 		synchronized (this.aliasMap) {
+			// 1.如果别名与beanName相同，不仅注册而且还要移除该别名
 			if (alias.equals(name)) {
 				this.aliasMap.remove(alias);
 			}
+			// 2.处理别名与beanName不同的情形
 			else {
 				String registeredName = this.aliasMap.get(alias);
 				if (registeredName != null) {
+					// 2.1 别名下已经注册过该beanName，不再重复注册
 					if (registeredName.equals(name)) {
 						// An existing alias - no need to re-register
 						return;
 					}
+					// 2.2 别名下已经注册过其他beanName，抛异常或者往下走
 					if (!allowAliasOverriding()) {
 						throw new IllegalStateException("Cannot register alias '" + alias + "' for name '" +
 								name + "': It is already registered for name '" + registeredName + "'.");
 					}
 				}
+				// 2.3 检查别名循环（如果alias已经是name的别名，包括alias -> ... -> name这样的传递性别名，抛异常）
 				checkForAliasCircle(name, alias);
+				// 2.4 注册或覆盖
 				this.aliasMap.put(alias, name);
 			}
 		}
@@ -81,6 +87,7 @@ public class SimpleAliasRegistry implements AliasRegistry {
 	 * @param alias the alias to look for
 	 * @since 4.2.1
 	 */
+	// 递归判断：给定的alias是否已经是name的别名（alias -> ... -> name）
 	public boolean hasAlias(String name, String alias) {
 		for (Map.Entry<String, String> entry : this.aliasMap.entrySet()) {
 			String registeredName = entry.getValue();
@@ -181,6 +188,7 @@ public class SimpleAliasRegistry implements AliasRegistry {
 	 * @see #hasAlias
 	 */
 	protected void checkForAliasCircle(String name, String alias) {
+		// 检查给定的alias是否已经是name的别名（alias -> ... -> name）
 		if (hasAlias(alias, name)) {
 			throw new IllegalStateException("Cannot register alias '" + alias +
 					"' for name '" + name + "': Circular reference - '" +

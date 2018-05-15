@@ -193,12 +193,15 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 
 	// 解析4种根级元素:<import/>、<alias/>、<bean/>、<beans/>
 	private void parseDefaultElement(Element ele, BeanDefinitionParserDelegate delegate) {
+		// 解析<import/>元素
 		if (delegate.nodeNameEquals(ele, IMPORT_ELEMENT)) {
 			importBeanDefinitionResource(ele);
 		}
+		// 解析<alias/>元素
 		else if (delegate.nodeNameEquals(ele, ALIAS_ELEMENT)) {
 			processAliasRegistration(ele);
 		}
+		// 解析<bean/>元素
 		else if (delegate.nodeNameEquals(ele, BEAN_ELEMENT)) { // <bean/>解析是重头戏
 			processBeanDefinition(ele, delegate);
 		}
@@ -213,6 +216,7 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 	 * from the given resource into the bean factory.
 	 */
 	protected void importBeanDefinitionResource(Element ele) {
+		// 1.获取resource属性
 		String location = ele.getAttribute(RESOURCE_ATTRIBUTE);
 		if (!StringUtils.hasText(location)) {
 			getReaderContext().error("Resource location must not be empty", ele);
@@ -294,12 +298,14 @@ public class DefaultBeanDefinitionDocumentReader implements BeanDefinitionDocume
 		}
 		if (valid) {
 			try {
+				// 1.将name注册到别名下面
 				getReaderContext().getRegistry().registerAlias(name, alias);
 			}
 			catch (Exception ex) {
 				getReaderContext().error("Failed to register alias '" + alias +
 						"' for bean with name '" + name + "'", ele, ex);
 			}
+			// 2.发送"别名注册"事件，通知相关监听器（观察者模式）
 			getReaderContext().fireAliasRegistered(name, alias, extractSource(ele));
 		}
 	}
