@@ -16,14 +16,6 @@
 
 package org.springframework.beans.factory.support;
 
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Executable;
-import java.lang.reflect.Member;
-import java.lang.reflect.Method;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.function.Supplier;
-
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionHolder;
@@ -31,6 +23,14 @@ import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.core.ResolvableType;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Executable;
+import java.lang.reflect.Member;
+import java.lang.reflect.Method;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.function.Supplier;
 
 /**
  * A root bean definition represents the merged bean definition that backs
@@ -49,6 +49,13 @@ import org.springframework.util.Assert;
  * @author Juergen Hoeller
  * @see GenericBeanDefinition
  * @see ChildBeanDefinition
+ */
+/*
+ * 1.根bean定义用来表示合并的bean定义，在运行时支撑着BeanFactory中一个特定的bean；
+ * 2.它可能创建自多个具有继承关系的原始bean定义，它们典型地注册为GenericBeanDefinition；
+ * 3.根bean定义本质上是一个运行时统一的bean定义视图。
+ *
+ * 根bean定义也可用于在配置阶段注册单个bean定义，但现在更推荐用GenericBeanDefinition——因为允许动态定义父bean定义，而不是硬编码写死。
  */
 @SuppressWarnings("serial")
 public class RootBeanDefinition extends AbstractBeanDefinition {

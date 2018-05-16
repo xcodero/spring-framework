@@ -33,6 +33,8 @@ import org.springframework.lang.Nullable;
  * @author Juergen Hoeller
  * @since 5.0
  */
+// 用于内部表示一个null的bean实例，如FactoryBean#getObject或工厂方法返回null值
+// 注意该类的equals方法——该类的实例只有与自身或null才算相等，与该类的其他实例都是不等的
 final class NullBean {
 
 	NullBean() {
