@@ -170,8 +170,10 @@ class ConstructorResolver {
 				ArgumentsHolder argsHolder;
 				if (resolvedValues != null) {
 					try {
+						// 委托给ConstructorPropertiesChecker从ConstructorProperties注解中提起参数名数组
 						String[] paramNames = ConstructorPropertiesChecker.evaluate(candidate, paramTypes.length);
 						if (paramNames == null) {
+							// 使用bean工厂的参数名发现器从候选构造器实例中提取参数名数组
 							ParameterNameDiscoverer pnd = this.beanFactory.getParameterNameDiscoverer();
 							if (pnd != null) {
 								paramNames = pnd.getParameterNames(candidate);
@@ -734,6 +736,7 @@ class ConstructorResolver {
 	/**
 	 * Resolve the prepared arguments stored in the given bean definition.
 	 */
+	// 解析给定bean定义中保存的部分准备好的构造器参数
 	private Object[] resolvePreparedArguments(
 			String beanName, RootBeanDefinition mbd, BeanWrapper bw, Executable executable, Object[] argsToResolve) {
 
@@ -819,6 +822,7 @@ class ConstructorResolver {
 	/**
 	 * Private inner class for holding argument combinations.
 	 */
+	// 参数持有器——用于持有参数组合的私有静态内部类
 	private static class ArgumentsHolder {
 
 		public final Object[] rawArguments;
@@ -883,6 +887,7 @@ class ConstructorResolver {
 	/**
 	 * Marker for autowired arguments in a cached argument array.
  	 */
+	// 自动连线参数的标记
 	private static class AutowiredArgumentMarker {
 	}
 
@@ -890,19 +895,26 @@ class ConstructorResolver {
 	/**
 	 * Delegate for checking Java 6's {@link ConstructorProperties} annotation.
 	 */
+	// 用于检查ConstructorProperties注解的代理
 	private static class ConstructorPropertiesChecker {
 
 		@Nullable
 		public static String[] evaluate(Constructor<?> candidate, int paramCount) {
+			// 1.获取构造器的ConstructorProperties注解
 			ConstructorProperties cp = candidate.getAnnotation(ConstructorProperties.class);
+			// 2.如果使用了ConstructorProperties注解
 			if (cp != null) {
+				// 2.1 获取ConstructorProperties注解实例的value属性（字符串数组）
 				String[] names = cp.value();
+				// 2.2 检查value属性（字符串数组）的长度
 				if (names.length != paramCount) {
 					throw new IllegalStateException("Constructor annotated with @ConstructorProperties but not " +
 							"corresponding to actual number of parameters (" + paramCount + "): " + candidate);
 				}
+				// 2.3 返回参数名数组
 				return names;
 			}
+			// 3.如果没有使用ConstructorProperties注解，返回null
 			else {
 				return null;
 			}
