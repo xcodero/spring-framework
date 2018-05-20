@@ -16,19 +16,15 @@
 
 package org.springframework.beans;
 
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.Method;
-import java.security.AccessControlContext;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
-
 import org.springframework.core.ResolvableType;
 import org.springframework.core.convert.Property;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ReflectionUtils;
+
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
+import java.security.*;
 
 /**
  * Default {@link BeanWrapper} implementation that should be sufficient
@@ -60,11 +56,13 @@ import org.springframework.util.ReflectionUtils;
  * @see BeanWrapper
  * @see PropertyEditorRegistrySupport
  */
+// BeanWrapper接口的默认实现，对所有典型使用场景应该足够了；
+// 为了提升性能对内省结果进行了缓存。
 public class BeanWrapperImpl extends AbstractNestablePropertyAccessor implements BeanWrapper {
 
 	/**
 	 * Cached introspections results for this object, to prevent encountering
-	 * the cost of JavaBeans introspection every time.
+	 * the cost JavaBeans introspection every time.
 	 */
 	@Nullable
 	private CachedIntrospectionResults cachedIntrospectionResults;

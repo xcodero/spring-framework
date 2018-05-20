@@ -152,7 +152,7 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	// 依赖检查
 	private int dependencyCheck = DEPENDENCY_CHECK_NONE;
 
-	// 该bean的实例化依赖另一个bean先实例化，对应<bean/>的depend-on属性
+	// 该bean的实例化依赖另一个bean先实例化，对应<bean/>的depends-on属性
 	@Nullable
 	private String[] dependsOn;
 
@@ -634,6 +634,7 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	/**
 	 * Return the bean names that this bean depends on.
 	 */
+	// 返回该bean依赖的bean的名称
 	@Override
 	@Nullable
 	public String[] getDependsOn() {

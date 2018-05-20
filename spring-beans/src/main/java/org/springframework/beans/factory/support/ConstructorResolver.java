@@ -16,28 +16,7 @@
 
 package org.springframework.beans.factory.support;
 
-import java.beans.ConstructorProperties;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Executable;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import org.springframework.beans.BeanMetadataElement;
-import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeanWrapperImpl;
-import org.springframework.beans.BeansException;
-import org.springframework.beans.TypeConverter;
-import org.springframework.beans.TypeMismatchException;
+import org.springframework.beans.*;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.BeanDefinitionStoreException;
 import org.springframework.beans.factory.InjectionPoint;
@@ -50,12 +29,16 @@ import org.springframework.core.MethodParameter;
 import org.springframework.core.NamedThreadLocal;
 import org.springframework.core.ParameterNameDiscoverer;
 import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
-import org.springframework.util.MethodInvoker;
-import org.springframework.util.ObjectUtils;
-import org.springframework.util.ReflectionUtils;
-import org.springframework.util.StringUtils;
+import org.springframework.util.*;
+
+import java.beans.ConstructorProperties;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Executable;
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
+import java.util.*;
 
 /**
  * Delegate for resolving constructors and factory methods.
@@ -71,6 +54,8 @@ import org.springframework.util.StringUtils;
  * @see #instantiateUsingFactoryMethod
  * @see AbstractAutowireCapableBeanFactory
  */
+// 1.解析构造器和工厂方法的代理；
+// 2.通过参数匹配进行构造器解析。
 class ConstructorResolver {
 
 	private static final NamedThreadLocal<InjectionPoint> currentInjectionPoint =
@@ -105,6 +90,7 @@ class ConstructorResolver {
 	public BeanWrapper autowireConstructor(final String beanName, final RootBeanDefinition mbd,
 			@Nullable Constructor<?>[] chosenCtors, @Nullable final Object[] explicitArgs) {
 
+		// 1.新建BeanWrapperImpl对象，并向bean包装器注册自定义编辑器
 		BeanWrapperImpl bw = new BeanWrapperImpl();
 		this.beanFactory.initBeanWrapper(bw);
 
@@ -112,9 +98,11 @@ class ConstructorResolver {
 		ArgumentsHolder argsHolderToUse = null;
 		Object[] argsToUse = null;
 
+		// 2.1 如果调用getBean方法时指定构造器参数值，直接使用
 		if (explicitArgs != null) {
 			argsToUse = explicitArgs;
 		}
+		// 2.2 否则，
 		else {
 			Object[] argsToResolve = null;
 			synchronized (mbd.constructorArgumentLock) {

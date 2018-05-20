@@ -16,11 +16,11 @@
 
 package org.springframework.beans.propertyeditors;
 
-import java.beans.PropertyEditorSupport;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
+
+import java.beans.PropertyEditorSupport;
 
 /**
  * Custom {@link java.beans.PropertyEditor} for String arrays.
@@ -34,6 +34,8 @@ import org.springframework.util.StringUtils;
  * @see org.springframework.util.StringUtils#delimitedListToStringArray
  * @see org.springframework.util.StringUtils#arrayToDelimitedString
  */
+// 1.自定义的字符串数组PropertyEditor
+// 2.字符串必须是CSV格式，可自定义分隔符
 public class StringArrayPropertyEditor extends PropertyEditorSupport {
 
 	/**

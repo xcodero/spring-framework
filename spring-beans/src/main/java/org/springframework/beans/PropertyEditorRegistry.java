@@ -34,12 +34,16 @@ import org.springframework.lang.Nullable;
  * @see BeanWrapper
  * @see org.springframework.validation.DataBinder
  */
+// 1.封装用于注册PropertyEditor的方法，是PropertyEditorRegistrar操作的中心接口
 public interface PropertyEditorRegistry {
 
 	/**
 	 * Register the given custom property editor for all properties of the given type.
 	 * @param requiredType the type of the property
 	 * @param propertyEditor the editor to register
+	 */
+	/*
+	 * 为给定类型的所有属性注册自定义属性编辑器
 	 */
 	void registerCustomEditor(Class<?> requiredType, PropertyEditor propertyEditor);
 

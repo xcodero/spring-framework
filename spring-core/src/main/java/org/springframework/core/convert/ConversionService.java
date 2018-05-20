@@ -26,6 +26,10 @@ import org.springframework.lang.Nullable;
  * @author Phillip Webb
  * @since 3.0
  */
+/*
+ * 1.类型转换的服务接口，是转换系统的入口点；
+ * 2.调用convert(Object, Class)可以使用该系统进行线程安全的类型转换。
+ */
 public interface ConversionService {
 
 	/**

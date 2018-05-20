@@ -44,6 +44,9 @@ import org.springframework.lang.Nullable;
  * @see org.springframework.aop.framework.autoproxy.AbstractAutoProxyCreator#setCustomTargetSourceCreators
  * @see org.springframework.aop.framework.autoproxy.target.LazyInitTargetSourceCreator
  */
+// 1.这是BeanPostProcessor的一个子接口，增加了一个实例化前回调、实例化后但属性设置或自动连线前回调
+
+// 注意：该接口是一个特殊用途接口，主要用于框架内部使用。推荐实现BeanPostProcessor接口或继承InstantiationAwareBeanPostProcessorAdapter类，以免受该接口日后扩展的影响
 public interface InstantiationAwareBeanPostProcessor extends BeanPostProcessor {
 
 	/**

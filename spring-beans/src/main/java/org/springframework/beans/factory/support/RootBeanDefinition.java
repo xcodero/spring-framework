@@ -85,6 +85,7 @@ public class RootBeanDefinition extends AbstractBeanDefinition {
 	final Object constructorArgumentLock = new Object();
 
 	/** Package-visible field for caching the resolved constructor or factory method */
+	// 该域用于缓存解析的构造器或工厂方法（采用缓存机制，提升性能）
 	@Nullable
 	Executable resolvedConstructorOrFactoryMethod;
 
@@ -106,6 +107,7 @@ public class RootBeanDefinition extends AbstractBeanDefinition {
 	boolean postProcessed = false;
 
 	/** Package-visible field that indicates a before-instantiation post-processor having kicked in */
+	// "实例化前"后处理器开始生效吗？
 	@Nullable
 	volatile Boolean beforeInstantiationResolved;
 
