@@ -16,12 +16,12 @@
 
 package org.springframework.beans.factory.support;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.lang.Nullable;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 
 /**
  * Interface responsible for creating instances corresponding to a root bean definition.
@@ -32,6 +32,10 @@ import org.springframework.lang.Nullable;
  * @author Rod Johnson
  * @author Juergen Hoeller
  * @since 1.1
+ */
+/*
+ * 1.实例化策略接口——负责创建实例的接口，该实例对应于一个根bean定义；
+ * 2.之所以将其抽象为一个策略，是因为可能有不同的方法，包括使用CGLB创建子类来支持方法注入
  */
 public interface InstantiationStrategy {
 
@@ -60,6 +64,9 @@ public interface InstantiationStrategy {
 	 * @param args the constructor arguments to apply
 	 * @return a bean instance for this bean definition
 	 * @throws BeansException if the instantiation attempt failed
+	 */
+	/*
+	 * 返回在指定工厂中具有给定名称的bean的实例，该实例是通过给定的构造器创建的
 	 */
 	Object instantiate(RootBeanDefinition bd, @Nullable String beanName, BeanFactory owner,
 			Constructor<?> ctor, @Nullable Object... args) throws BeansException;

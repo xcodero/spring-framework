@@ -16,26 +16,18 @@
 
 package org.springframework.beans.factory.support;
 
-import java.beans.PropertyDescriptor;
-import java.io.Serializable;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.lang.reflect.Modifier;
-import java.lang.reflect.ParameterizedType;
-import java.lang.reflect.Proxy;
-import java.lang.reflect.Type;
-import java.lang.reflect.TypeVariable;
-import java.util.Arrays;
-import java.util.Set;
-
 import org.springframework.beans.BeanMetadataElement;
 import org.springframework.beans.factory.ObjectFactory;
 import org.springframework.beans.factory.config.TypedStringValue;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+
+import java.beans.PropertyDescriptor;
+import java.io.Serializable;
+import java.lang.reflect.*;
+import java.util.Arrays;
+import java.util.Set;
 
 /**
  * Utility class that contains various methods useful for the implementation of
@@ -55,6 +47,10 @@ abstract class AutowireUtils {
 	 * with decreasing number of arguments, then non-public constructors, again with
 	 * decreasing number of arguments.
 	 * @param constructors the constructor array to sort
+	 */
+	/*
+	 * 1.对给定的构造器进行排序，公有构造器和最多参数个数的构造器在前
+	 * 2.排序结果——首先是公有构造器，参数个数递减；然后是非公有构造器，参数个数递减
 	 */
 	public static void sortConstructors(Constructor<?>[] constructors) {
 		Arrays.sort(constructors, (c1, c2) -> {

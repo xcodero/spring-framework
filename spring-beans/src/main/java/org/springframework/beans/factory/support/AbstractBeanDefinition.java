@@ -171,7 +171,7 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	// 是否允许访问非公共的构造器和方法，程序设置
 	private boolean nonPublicAccessAllowed = true;
 
-	// 是否已宽松模式解析构造器，程序设置
+	// 是否以宽松模式解析构造器，程序设置
 	// 如果设为false，则如下情况会抛异常，因为Spring无法确定哪个构造函数
 	/*
 	 * interface ITest {}
@@ -780,6 +780,7 @@ public abstract class AbstractBeanDefinition extends BeanMetadataAttributeAccess
 	/**
 	 * Return whether to resolve constructors in lenient mode or in strict mode.
 	 */
+	// 返回是否以宽松模式还是以严格模式解析构造器
 	public boolean isLenientConstructorResolution() {
 		return this.lenientConstructorResolution;
 	}
