@@ -36,12 +36,17 @@ import org.springframework.lang.Nullable;
  * @author Juergen Hoeller
  * @since 2.0
  */
+/*
+ * aspect-autoproxy标签的BeanDefinitionParser，使bean工厂中@AspectJ风格的切面生效
+ */
 class AspectJAutoProxyBeanDefinitionParser implements BeanDefinitionParser {
 
 	@Override
 	@Nullable
 	public BeanDefinition parse(Element element, ParserContext parserContext) {
+		// 注册或升级一个AspectJ注解自动代理创建器（即注解感知的AspectJ自动代理创建器）
 		AopNamespaceUtils.registerAspectJAnnotationAutoProxyCreatorIfNecessary(parserContext, element);
+		// 处理<aop:include/>子元素
 		extendBeanDefinition(element, parserContext);
 		return null;
 	}
@@ -61,13 +66,16 @@ class AspectJAutoProxyBeanDefinitionParser implements BeanDefinitionParser {
 			Node node = childNodes.item(i);
 			if (node instanceof Element) {
 				Element includeElement = (Element) node;
+				// 有类型的字符串值持有器
 				TypedStringValue valueHolder = new TypedStringValue(includeElement.getAttribute("name"));
 				valueHolder.setSource(parserContext.extractSource(includeElement));
+				// 放入includePatterns数组
 				includePatterns.add(valueHolder);
 			}
 		}
 		if (!includePatterns.isEmpty()) {
 			includePatterns.setSource(parserContext.extractSource(element));
+			// 保存到bean定义中
 			beanDef.getPropertyValues().add("includePatterns", includePatterns);
 		}
 	}

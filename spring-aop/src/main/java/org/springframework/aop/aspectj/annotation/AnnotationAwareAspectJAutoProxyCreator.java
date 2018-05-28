@@ -16,16 +16,16 @@
 
 package org.springframework.aop.aspectj.annotation;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Pattern;
-
 import org.springframework.aop.Advisor;
 import org.springframework.aop.aspectj.autoproxy.AspectJAwareAdvisorAutoProxyCreator;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * {@link AspectJAwareAdvisorAutoProxyCreator} subclass that processes all AspectJ
@@ -45,6 +45,12 @@ import org.springframework.util.Assert;
  * @author Juergen Hoeller
  * @since 2.0
  * @see org.springframework.aop.aspectj.annotation.AspectJAdvisorFactory
+ */
+/*
+ * 1.AspectJAwareAdvisorAutoProxyCreator的一个子类，用于处理当前上下文中所有使用AspectJ注解的切面，以及Spring增强器；
+ * 2.该类自动识别所有使用AspectJ注解的类，并应用它们的通知，只要Spring AOP基于代理的模型能够应用该通知（这涉及到方法执行连接点）；
+ * 3.如果使用了<aop:include>元素，只有bean名称匹配include模式的@AspectJ风格bean才会被认为是用来定义切面的，Spring只用它们来配置动态代理；
+ * 4.对Spring增强器的处理遵循AbstractAdvisorAutoProxyCreator中的规则。
  */
 @SuppressWarnings("serial")
 public class AnnotationAwareAspectJAutoProxyCreator extends AspectJAwareAdvisorAutoProxyCreator {
@@ -89,8 +95,10 @@ public class AnnotationAwareAspectJAutoProxyCreator extends AspectJAwareAdvisorA
 	@Override
 	protected List<Advisor> findCandidateAdvisors() {
 		// Add all the Spring advisors found according to superclass rules.
+		// 当使用@AspectJ风格的切面时并不是丢弃对XML配置的支持，这里调用父类方法加载XML配置文件中的aop声明
 		List<Advisor> advisors = super.findCandidateAdvisors();
 		// Build Advisors for all AspectJ aspects in the bean factory.
+		// 为bean工厂中@AspectJ风格的切面构建增强器
 		if (this.aspectJAdvisorsBuilder != null) {
 			advisors.addAll(this.aspectJAdvisorsBuilder.buildAspectJAdvisors());
 		}

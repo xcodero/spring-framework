@@ -40,6 +40,11 @@ import org.springframework.lang.Nullable;
  * @since 2.0
  * @see AopConfigUtils
  */
+/*
+ * 1.根据aop命名空间标签注册内部使用的自动代理创建器；
+ * 2.虽然多个标签希望注册不同的具体实现，但只能注册一个自动代理创建器；
+ * 3.因此委托给AopConfigUtils，该类封装了一个简单了升级协议。
+ */
 public abstract class AopNamespaceUtils {
 
 	/**
@@ -74,9 +79,12 @@ public abstract class AopNamespaceUtils {
 	public static void registerAspectJAnnotationAutoProxyCreatorIfNecessary(
 			ParserContext parserContext, Element sourceElement) {
 
+		// 1.根据需要注册一个AspectJ注解自动代理创建器（即注解感知的AspectJ自动代理创建器）
 		BeanDefinition beanDefinition = AopConfigUtils.registerAspectJAnnotationAutoProxyCreatorIfNecessary(
 				parserContext.getRegistry(), parserContext.extractSource(sourceElement));
+		// 2.处理<aspectj-autoproxy/>元素的proxy-target-class和expose-proxy属性
 		useClassProxyingIfNecessary(parserContext.getRegistry(), sourceElement);
+		//
 		registerComponentIfNecessary(beanDefinition, parserContext);
 	}
 

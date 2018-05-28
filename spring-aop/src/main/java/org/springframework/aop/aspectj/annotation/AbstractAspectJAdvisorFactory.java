@@ -16,6 +16,18 @@
 
 package org.springframework.aop.aspectj.annotation;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.aspectj.lang.annotation.*;
+import org.aspectj.lang.reflect.AjType;
+import org.aspectj.lang.reflect.AjTypeSystem;
+import org.aspectj.lang.reflect.PerClauseKind;
+import org.springframework.aop.framework.AopConfigException;
+import org.springframework.core.ParameterNameDiscoverer;
+import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.lang.Nullable;
+import org.springframework.util.StringUtils;
+
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
@@ -24,25 +36,6 @@ import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringTokenizer;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.aspectj.lang.annotation.After;
-import org.aspectj.lang.annotation.AfterReturning;
-import org.aspectj.lang.annotation.AfterThrowing;
-import org.aspectj.lang.annotation.Around;
-import org.aspectj.lang.annotation.Aspect;
-import org.aspectj.lang.annotation.Before;
-import org.aspectj.lang.annotation.Pointcut;
-import org.aspectj.lang.reflect.AjType;
-import org.aspectj.lang.reflect.AjTypeSystem;
-import org.aspectj.lang.reflect.PerClauseKind;
-
-import org.springframework.aop.framework.AopConfigException;
-import org.springframework.core.ParameterNameDiscoverer;
-import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.lang.Nullable;
-import org.springframework.util.StringUtils;
 
 /**
  * Abstract base class for factories that can create Spring AOP Advisors
@@ -72,6 +65,10 @@ public abstract class AbstractAspectJAdvisorFactory implements AspectJAdvisorFac
 	 * if it has the @Aspect annotation, and was not compiled by ajc. The reason for this latter test
 	 * is that aspects written in the code-style (AspectJ language) also have the annotation present
 	 * when compiled by ajc with the -1.5 flag, yet they cannot be consumed by Spring AOP.
+	 */
+	/*
+	 * 1.只有当某个@AspectJ风格的切面使用了@Aspect注解，且不是由ajc编译的，才认为适合于Spring AOP系统使用；
+	 * 2.之所以要求"不是由ajc编译的"，是因为使用带-1.5标记的ajc编译代码风格（AspectJ语言）书写的切面时也会出现注解，但Spring AOP不能消费它们。
 	 */
 	@Override
 	public boolean isAspect(Class<?> clazz) {

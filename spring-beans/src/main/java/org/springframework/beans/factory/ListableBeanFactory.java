@@ -16,12 +16,12 @@
 
 package org.springframework.beans.factory;
 
-import java.lang.annotation.Annotation;
-import java.util.Map;
-
 import org.springframework.beans.BeansException;
 import org.springframework.core.ResolvableType;
 import org.springframework.lang.Nullable;
+
+import java.lang.annotation.Annotation;
+import java.util.Map;
 
 /**
  * Extension of the {@link BeanFactory} interface to be implemented by bean factories
@@ -74,6 +74,10 @@ public interface ListableBeanFactory extends BeanFactory {
 	 * and ignores any singleton beans that have been registered by
 	 * other means than bean definitions.
 	 * @return the number of beans defined in the factory
+	 */
+	/*
+	 * 1.返回该工厂中定义的bean的数据；
+	 * 2.没有考虑该工厂参与的任何层次，且忽略bean定义以外的方式注册的单例bean。
 	 */
 	int getBeanDefinitionCount();
 

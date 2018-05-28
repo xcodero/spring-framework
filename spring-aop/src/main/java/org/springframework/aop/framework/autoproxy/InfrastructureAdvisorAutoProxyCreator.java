@@ -27,6 +27,9 @@ import org.springframework.lang.Nullable;
  * @author Juergen Hoeller
  * @since 2.0.7
  */
+/*
+ * 只考虑基础设施增强器的自动代理创建器，忽略任何应用中定义的增强器。
+ */
 @SuppressWarnings("serial")
 public class InfrastructureAdvisorAutoProxyCreator extends AbstractAdvisorAutoProxyCreator {
 

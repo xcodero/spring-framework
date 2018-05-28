@@ -16,20 +16,9 @@
 
 package org.springframework.aop.framework.autoproxy;
 
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.aopalliance.aop.Advice;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.aop.Advisor;
 import org.springframework.aop.Pointcut;
 import org.springframework.aop.TargetSource;
@@ -50,6 +39,11 @@ import org.springframework.beans.factory.config.SmartInstantiationAwareBeanPostP
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
+
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Constructor;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * {@link org.springframework.beans.factory.config.BeanPostProcessor} implementation
@@ -299,7 +293,9 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	@Override
 	public Object postProcessAfterInitialization(@Nullable Object bean, String beanName) throws BeansException {
 		if (bean != null) {
+			// 构建缓存key
 			Object cacheKey = getCacheKey(bean.getClass(), beanName);
+			// 如果没有被缓存，根据需要封装该bean
 			if (!this.earlyProxyReferences.contains(cacheKey)) {
 				return wrapIfNecessary(bean, beanName, cacheKey);
 			}
@@ -319,6 +315,10 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	 * @param beanName the bean name
 	 * @return the cache key for the given class and name
 	 */
+	/*
+	 * 1.为给定的bean class和bean name构建缓存key；
+	 * 2.从Spring 4.2.3开始，不返回连接的class/name字符串，而是更加高效的缓存key——优先beanName（FactoryBean会带上&前缀），没有的话返回beanClass；
+	 */
 	protected Object getCacheKey(Class<?> beanClass, @Nullable String beanName) {
 		if (StringUtils.hasLength(beanName)) {
 			return (FactoryBean.class.isAssignableFrom(beanClass) ?
@@ -336,28 +336,38 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	 * @param cacheKey the cache key for metadata access
 	 * @return a proxy wrapping the bean, or the raw bean instance as-is
 	 */
+	// 如果给定bean适合做代理，对它进行包装
 	protected Object wrapIfNecessary(Object bean, String beanName, Object cacheKey) {
+		// 1.1 如果给定bean已经处理过
 		if (StringUtils.hasLength(beanName) && this.targetSourcedBeans.contains(beanName)) {
 			return bean;
 		}
+		// 1.2 如果给定bean属于不需增强的bean
 		if (Boolean.FALSE.equals(this.advisedBeans.get(cacheKey))) {
 			return bean;
 		}
+		// 1.3 如果给定bean是Aop基础设施bean或应该跳过该bean
 		if (isInfrastructureClass(bean.getClass()) || shouldSkip(bean.getClass(), beanName)) {
 			this.advisedBeans.put(cacheKey, Boolean.FALSE);
 			return bean;
 		}
 
 		// Create proxy if we have advice.
+		// 2.1 获取适合给定bean的通知和增强器（拦截器）
 		Object[] specificInterceptors = getAdvicesAndAdvisorsForBean(bean.getClass(), beanName, null);
 		if (specificInterceptors != DO_NOT_PROXY) {
+			// 2.2 如果有合适的拦截器，则记录下给定bean需要增强
 			this.advisedBeans.put(cacheKey, Boolean.TRUE);
+			// 2.3 创建代理
 			Object proxy = createProxy(
 					bean.getClass(), beanName, specificInterceptors, new SingletonTargetSource(bean));
+			// 2.4 记录该bean的代理所属的Class实例
 			this.proxyTypes.put(cacheKey, proxy.getClass());
+			// 2.5 返回代理的实例
 			return proxy;
 		}
 
+		// 3 如果没有合适的拦截器，记录下给定bean不需要增强，并返回该bean
 		this.advisedBeans.put(cacheKey, Boolean.FALSE);
 		return bean;
 	}

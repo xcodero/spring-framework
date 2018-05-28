@@ -16,19 +16,18 @@
 
 package org.springframework.aop.aspectj.annotation;
 
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.aspectj.lang.reflect.PerClauseKind;
-
 import org.springframework.aop.Advisor;
 import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import java.util.Collections;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Helper for retrieving @AspectJ beans from a BeanFactory and building
@@ -80,6 +79,8 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 	 * @return the list of {@link org.springframework.aop.Advisor} beans
 	 * @see #isEligibleBean
 	 */
+	// 1.寻找当前bean工厂中@AspectJ风格的切面bean，并返回Spring AOP增强器列表；
+	// 2.为每个AspectJ通知方法创建一个Spring增强器。
 	public List<Advisor> buildAspectJAdvisors() {
 		List<String> aspectNames = this.aspectBeanNames;
 
@@ -89,19 +90,25 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 				if (aspectNames == null) {
 					List<Advisor> advisors = new LinkedList<>();
 					aspectNames = new LinkedList<>();
+					// 获取整个bean工厂层次中所有beanName（包括本地bean工厂和所有祖先bean工厂）
 					String[] beanNames = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
 							this.beanFactory, Object.class, true, false);
+					// 遍历所有的beanName
 					for (String beanName : beanNames) {
+						// 不合格的bean，略过（模板方法）
 						if (!isEligibleBean(beanName)) {
 							continue;
 						}
 						// We must be careful not to instantiate beans eagerly as in this case they
 						// would be cached by the Spring container but would not have been weaved.
+						// 获取对应bean的类型
 						Class<?> beanType = this.beanFactory.getType(beanName);
 						if (beanType == null) {
 							continue;
 						}
+						// 如果使用了@Aspect注解（且不是由ajc编译生成的）
 						if (this.advisorFactory.isAspect(beanType)) {
+							// 将beanName记录到切面名称缓存中
 							aspectNames.add(beanName);
 							AspectMetadata amd = new AspectMetadata(beanType, beanName);
 							if (amd.getAjType().getPerClause().getKind() == PerClauseKind.SINGLETON) {

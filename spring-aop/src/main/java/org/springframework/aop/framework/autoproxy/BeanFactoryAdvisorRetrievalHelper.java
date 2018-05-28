@@ -16,12 +16,8 @@
 
 package org.springframework.aop.framework.autoproxy;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.aop.Advisor;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.BeanCurrentlyInCreationException;
@@ -29,6 +25,9 @@ import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Helper for retrieving standard Spring Advisors from a BeanFactory,
@@ -72,8 +71,10 @@ public class BeanFactoryAdvisorRetrievalHelper {
 			if (advisorNames == null) {
 				// Do not initialize FactoryBeans here: We need to leave all regular beans
 				// uninitialized to let the auto-proxy creator apply to them!
+				// 获取整个bean工厂层次中所有Advisor类型的beanName（包括本地bean工厂和所有祖先bean工厂）
 				advisorNames = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
 						this.beanFactory, Advisor.class, true, false);
+				// 缓存起来
 				this.cachedAdvisorBeanNames = advisorNames;
 			}
 		}
@@ -82,8 +83,11 @@ public class BeanFactoryAdvisorRetrievalHelper {
 		}
 
 		List<Advisor> advisors = new LinkedList<>();
+		// 遍历所有的advisorName，
 		for (String name : advisorNames) {
+			// 不合格的增强器bean，略过
 			if (isEligibleBean(name)) {
+				// 如果某增强器bean正处于创建过程中，跳过？？
 				if (this.beanFactory.isCurrentlyInCreation(name)) {
 					if (logger.isDebugEnabled()) {
 						logger.debug("Skipping currently created advisor '" + name + "'");
@@ -91,6 +95,7 @@ public class BeanFactoryAdvisorRetrievalHelper {
 				}
 				else {
 					try {
+						// 获取对应的增强器bean实例
 						advisors.add(this.beanFactory.getBean(name, Advisor.class));
 					}
 					catch (BeanCreationException ex) {

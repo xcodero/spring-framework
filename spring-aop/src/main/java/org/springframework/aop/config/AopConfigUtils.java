@@ -44,6 +44,10 @@ import java.util.List;
  * @since 2.5
  * @see AopNamespaceUtils
  */
+/*
+ * 1.处理AOP自动代理创建器注册的工具类；
+ * 2.虽然可提供多个具体实现，但只能注册一个自动代理创建器，所以该类封装了一个简单的升级协议。
+ */
 public abstract class AopConfigUtils {
 
 	/**
@@ -55,16 +59,19 @@ public abstract class AopConfigUtils {
 	/**
 	 * Stores the auto proxy creator classes in escalation order.
 	 */
-	// 自动代理创建器的优先级列表（实际上就是按优先级增高的顺序存放自动代理创建器）
+	// 自动代理创建器的优先级列表（实际上就是按级别升高的顺序存放自动代理创建器）
 	private static final List<Class<?>> APC_PRIORITY_LIST = new ArrayList<>();
 
 	/**
 	 * Setup the escalation list.
 	 */
 	static {
+		// 基于基础设施增强器的自动代理创建器
 		APC_PRIORITY_LIST.add(InfrastructureAdvisorAutoProxyCreator.class);
+		// 基于AspectJ感知增强器的自动代理创建器
 		APC_PRIORITY_LIST.add(AspectJAwareAdvisorAutoProxyCreator.class);
-		APC_PRIORITY_LIST.add(AnnotationAwareAspectJAutoProxyCreator.class); // 优先级最高
+		// 注解感知的AspectJ自动代理创建器（级别最高）
+		APC_PRIORITY_LIST.add(AnnotationAwareAspectJAutoProxyCreator.class);
 	}
 
 
@@ -97,6 +104,7 @@ public abstract class AopConfigUtils {
 		return registerAspectJAnnotationAutoProxyCreatorIfNecessary(registry, null);
 	}
 
+	// 根据需要注册一个AspectJ注解自动代理创建器（即注解感知的AspectJ自动代理创建器——AnnotationAwareAspectJAutoProxyCreator）
 	@Nullable
 	public static BeanDefinition registerAspectJAnnotationAutoProxyCreatorIfNecessary(BeanDefinitionRegistry registry,
 			@Nullable Object source) {
@@ -118,7 +126,7 @@ public abstract class AopConfigUtils {
 		}
 	}
 
-	// 注册或升级bean定义注册中心里自动代理创建器的bean定义
+	// 根据情况注册或升级"bean定义注册中心"里自动代理创建器的bean定义
 	@Nullable
 	private static BeanDefinition registerOrEscalateApcAsRequired(Class<?> cls, BeanDefinitionRegistry registry,
 			@Nullable Object source) {

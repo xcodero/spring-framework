@@ -52,6 +52,14 @@ import org.springframework.beans.factory.xml.NamespaceHandlerSupport;
  * @author Juergen Hoeller
  * @since 2.0
  */
+/*
+ * 1.aop命名空间的命名空间处理器
+ * 2.提供一个<aop:config>元素的BeanDefinitionParser
+ * 3.<aop:config>元素可包含<aop:pointcut/>、<aop:advisor/>、<aop:aspect/>子元素
+ * 4.<aop:pointcut/>子元素用于创建指定名称的AspectJExpressionPointcut类型的bean
+ * 5.<aop:advisor/>子元素用于配置一个Advisor实例，并将它自动应用到bean工厂中所有相关的bean
+ * 6.<aop:advisor/>子元素既支持内联的、也支持引用的切点
+ */
 public class AopNamespaceHandler extends NamespaceHandlerSupport {
 
 	/**
