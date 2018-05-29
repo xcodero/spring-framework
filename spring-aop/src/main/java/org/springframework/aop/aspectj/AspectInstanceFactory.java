@@ -31,6 +31,10 @@ import org.springframework.lang.Nullable;
  * @since 2.0
  * @see org.springframework.beans.factory.BeanFactory#getBean
  */
+/*
+ * 1、切面实例工厂，用于提供@AspectJ风格切面的一个实例，跟Spring的bean工厂解耦开来；
+ * 2、该接口扩展自Ordered接口，表达底层切面在链中的顺序。
+ */
 public interface AspectInstanceFactory extends Ordered {
 
 	/**

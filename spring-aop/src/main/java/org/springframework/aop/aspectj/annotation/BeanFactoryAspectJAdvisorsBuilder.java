@@ -37,12 +37,19 @@ import java.util.concurrent.ConcurrentHashMap;
  * @since 2.0.2
  * @see AnnotationAwareAspectJAutoProxyCreator
  */
+/*
+ * 1."bean工厂AspectJ增强器"构建器
+ * 2.这是一个辅助类，用于从BeanFactory中获取@AspectJ风格的bean，并基于它们构建自动代理中用到的Spring增强器。
+ */
 public class BeanFactoryAspectJAdvisorsBuilder {
 
 	private final ListableBeanFactory beanFactory;
 
 	private final AspectJAdvisorFactory advisorFactory;
 
+	/*
+	 * 以下3个域用作缓存
+	 */
 	@Nullable
 	private volatile List<String> aspectBeanNames;
 
@@ -84,16 +91,17 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 	public List<Advisor> buildAspectJAdvisors() {
 		List<String> aspectNames = this.aspectBeanNames;
 
-		if (aspectNames == null) {
+		// 1、如果尚未初始化aspectNames（缓存），则锁定当前对象，对aspectNames、advisorsCache、aspectFactoryCache进行初始化
+		if (aspectNames == null) { // double-check法优化同步
 			synchronized (this) {
 				aspectNames = this.aspectBeanNames;
 				if (aspectNames == null) {
 					List<Advisor> advisors = new LinkedList<>();
 					aspectNames = new LinkedList<>();
-					// 获取整个bean工厂层次中所有beanName（包括本地bean工厂和所有祖先bean工厂）
+					// 2、获取整个bean工厂层次中所有beanName（包括本地bean工厂和所有祖先bean工厂）
 					String[] beanNames = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(
 							this.beanFactory, Object.class, true, false);
-					// 遍历所有的beanName
+					// 3、遍历所有的beanName
 					for (String beanName : beanNames) {
 						// 不合格的bean，略过（模板方法）
 						if (!isEligibleBean(beanName)) {
@@ -106,15 +114,18 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 						if (beanType == null) {
 							continue;
 						}
-						// 如果使用了@Aspect注解（且不是由ajc编译生成的）
+						// 4、处理使用了@Aspect注解（且不是由ajc编译生成的）的bean
 						if (this.advisorFactory.isAspect(beanType)) {
-							// 将beanName记录到切面名称缓存中
 							aspectNames.add(beanName);
+							// 4.1 新建AspectMetadata实例
 							AspectMetadata amd = new AspectMetadata(beanType, beanName);
 							if (amd.getAjType().getPerClause().getKind() == PerClauseKind.SINGLETON) {
+								// a) 新建BeanFactoryAspectInstanceFactory实例
 								MetadataAwareAspectInstanceFactory factory =
 										new BeanFactoryAspectInstanceFactory(this.beanFactory, beanName);
+								// b) 从@AspectJ风格的切面中提取增强器
 								List<Advisor> classAdvisors = this.advisorFactory.getAdvisors(factory);
+								// c) 记录到缓存中
 								if (this.beanFactory.isSingleton(beanName)) {
 									this.advisorsCache.put(beanName, classAdvisors);
 								}
@@ -129,19 +140,25 @@ public class BeanFactoryAspectJAdvisorsBuilder {
 									throw new IllegalArgumentException("Bean with name '" + beanName +
 											"' is a singleton, but aspect instantiation model is not singleton");
 								}
+								// i) 新建PrototypeAspectInstanceFactory实例
 								MetadataAwareAspectInstanceFactory factory =
 										new PrototypeAspectInstanceFactory(this.beanFactory, beanName);
+								// ii) 记录到缓存中
 								this.aspectFactoryCache.put(beanName, factory);
 								advisors.addAll(this.advisorFactory.getAdvisors(factory));
 							}
 						}
 					}
+					// 5、初始化aspectBeanNames缓存
 					this.aspectBeanNames = aspectNames;
+					// 6、返回提取的增强器
 					return advisors;
 				}
 			}
 		}
 
+		// 7、如果aspectNames（缓存）已经初始化，则
+		// a)直接从advisorsCache中获取增强器、b)或从aspectFactoryCache中获取"元数据感知的切面实例工厂"再提取出增强器
 		if (aspectNames.isEmpty()) {
 			return Collections.emptyList();
 		}
