@@ -16,13 +16,13 @@
 
 package org.springframework.core.convert.converter;
 
-import java.util.Comparator;
-import java.util.Map;
-
 import org.springframework.core.convert.ConversionService;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.comparator.Comparators;
+
+import java.util.Comparator;
+import java.util.Map;
 
 /**
  * A {@link Comparator} that converts values before they are compared.
@@ -33,6 +33,10 @@ import org.springframework.util.comparator.Comparators;
  * @since 3.2
  * @param <S> the source type
  * @param <T> the target type
+ */
+/*
+ * 1、转换比较器：先转换，再比较；
+ * 2、在JDK 1.8中，可使用Comparator#comparing实现
  */
 public class ConvertingComparator<S, T> implements Comparator<S> {
 

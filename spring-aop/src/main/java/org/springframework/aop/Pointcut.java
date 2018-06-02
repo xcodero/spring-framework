@@ -30,6 +30,10 @@ package org.springframework.aop;
  * @see org.springframework.aop.support.ClassFilters
  * @see org.springframework.aop.support.MethodMatchers
  */
+/*
+ * 1.核心的Spring切点抽象；
+ * 2.切点由ClassFilter和MethodMatcher组成，这两个基本项和切点本身可以结合使用建立组合；
+ */
 public interface Pointcut {
 
 	/**

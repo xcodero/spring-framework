@@ -27,6 +27,10 @@ import org.springframework.lang.Nullable;
  * @author Ramnivas Laddad
  * @since 2.5
  */
+/*
+ * 1.当前代理创建上下文持有器，由自动代理创建器暴露出来；
+ * 2.使用ThreadLocal保存当前被代理的bean名称。
+ */
 public class ProxyCreationContext {
 
 	/** ThreadLocal holding the current proxied bean name during Advisor matching */

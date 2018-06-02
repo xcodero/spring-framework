@@ -16,20 +16,19 @@
 
 package org.springframework.aop.aspectj.annotation;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.Serializable;
-
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.reflect.AjType;
 import org.aspectj.lang.reflect.AjTypeSystem;
 import org.aspectj.lang.reflect.PerClauseKind;
-
 import org.springframework.aop.Pointcut;
 import org.springframework.aop.aspectj.AspectJExpressionPointcut;
 import org.springframework.aop.aspectj.TypePatternClassFilter;
 import org.springframework.aop.framework.AopConfigException;
 import org.springframework.aop.support.ComposablePointcut;
+
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
 
 /**
  * Metadata for an AspectJ aspect class, with an additional Spring AOP pointcut
@@ -180,6 +179,10 @@ public class AspectMetadata implements Serializable {
 
 	/**
 	 * Return whether the aspect needs to be lazily instantiated.
+	 */
+	/*
+	 * 该切面是否需要延迟实例化
+	 * 提示：非PerClauseKind.SINGLETON实例化模型的切面都需要延迟实例化！
 	 */
 	public boolean isLazilyInstantiated() {
 		return (isPerThisOrPerTarget() || isPerTypeWithin());

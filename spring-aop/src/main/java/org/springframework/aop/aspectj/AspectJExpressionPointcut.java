@@ -16,32 +16,13 @@
 
 package org.springframework.aop.aspectj;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
 import org.aopalliance.intercept.MethodInvocation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.aspectj.weaver.patterns.NamePattern;
 import org.aspectj.weaver.reflect.ReflectionWorld.ReflectionWorldException;
 import org.aspectj.weaver.reflect.ShadowMatchImpl;
-import org.aspectj.weaver.tools.ContextBasedMatcher;
-import org.aspectj.weaver.tools.FuzzyBoolean;
-import org.aspectj.weaver.tools.JoinPointMatch;
-import org.aspectj.weaver.tools.MatchingContext;
-import org.aspectj.weaver.tools.PointcutDesignatorHandler;
-import org.aspectj.weaver.tools.PointcutExpression;
-import org.aspectj.weaver.tools.PointcutParameter;
-import org.aspectj.weaver.tools.PointcutParser;
-import org.aspectj.weaver.tools.PointcutPrimitive;
-import org.aspectj.weaver.tools.ShadowMatch;
-
+import org.aspectj.weaver.tools.*;
 import org.springframework.aop.ClassFilter;
 import org.springframework.aop.IntroductionAwareMethodMatcher;
 import org.springframework.aop.MethodMatcher;
@@ -62,6 +43,15 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * Spring {@link org.springframework.aop.Pointcut} implementation
  * that uses the AspectJ weaver to evaluate a pointcut expression.
@@ -79,6 +69,11 @@ import org.springframework.util.StringUtils;
  * @author Ramnivas Laddad
  * @author Dave Syer
  * @since 2.0
+ */
+/*
+ * 1.Pointcut接口的实现类，使用AspectJ织入器计算切点表达式；
+ * 2.切点表达式的值是一个AspectJ表达式，它可以引用其他切点并使用组合等操作；
+ * 3.由于该切点是用在Spring AOP的基于代理的模型中，因此只支持方法执行切点。
  */
 @SuppressWarnings("serial")
 public class AspectJExpressionPointcut extends AbstractExpressionPointcut

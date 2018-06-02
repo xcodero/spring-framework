@@ -16,14 +16,8 @@
 
 package org.springframework.aop.aspectj.annotation;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.Serializable;
-import java.lang.reflect.Method;
-
 import org.aopalliance.aop.Advice;
 import org.aspectj.lang.reflect.PerClauseKind;
-
 import org.springframework.aop.Pointcut;
 import org.springframework.aop.aspectj.AspectJExpressionPointcut;
 import org.springframework.aop.aspectj.AspectJPrecedenceInformation;
@@ -33,6 +27,11 @@ import org.springframework.aop.support.DynamicMethodMatcherPointcut;
 import org.springframework.aop.support.Pointcuts;
 import org.springframework.lang.Nullable;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.Serializable;
+import java.lang.reflect.Method;
+
 /**
  * Internal implementation of AspectJPointcutAdvisor.
  * Note that there will be one instance of this advisor for each target method.
@@ -40,6 +39,10 @@ import org.springframework.lang.Nullable;
  * @author Rod Johnson
  * @author Juergen Hoeller
  * @since 2.0
+ */
+/*
+ * 1.AspectJ切点增强器的内部实现；
+ * 2.为每一个目标方法新建该类的实例。
  */
 @SuppressWarnings("serial")
 class InstantiationModelAwarePointcutAdvisorImpl
@@ -110,6 +113,7 @@ class InstantiationModelAwarePointcutAdvisorImpl
 			// A singleton aspect.
 			this.pointcut = this.declaredPointcut;
 			this.lazy = false;
+			// 实例化通知拦截器，如MethodBeforeAdviceInterceptor、AspectJAfterAdvice（也实现了MethodInterceptor接口）等
 			this.instantiatedAdvice = instantiateAdvice(this.declaredPointcut);
 		}
 	}

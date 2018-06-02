@@ -29,6 +29,9 @@ import org.springframework.lang.Nullable;
  * @since 2.0.3
  * @see org.springframework.aop.support.AopUtils#getTargetClass(Object)
  */
+/*
+ * 暴露代理后面的目标类的最小接口
+ */
 public interface TargetClassAware {
 
 	/**

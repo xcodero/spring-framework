@@ -28,6 +28,10 @@ import org.springframework.aop.Advisor;
  * @author Rod Johnson
  * @author Rob Harrop
  */
+/*
+ * 1.通知器适配器注册中心，用于注册通知器适配器；
+ * 2.这是一个SPI接口，Spring用户不应该实现它。
+ */
 public interface AdvisorAdapterRegistry {
 
 	/**

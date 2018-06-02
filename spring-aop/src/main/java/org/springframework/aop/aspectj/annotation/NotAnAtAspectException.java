@@ -26,6 +26,8 @@ import org.springframework.aop.framework.AopConfigException;
  * @author Rod Johnson
  * @since 2.0
  */
+// 1."不是一个@AspectJ切面"异常
+// "@"读作"at"
 @SuppressWarnings("serial")
 public class NotAnAtAspectException extends AopConfigException {
 

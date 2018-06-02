@@ -41,6 +41,9 @@ package org.aopalliance.intercept;
  *
  * @author Rod Johnson
  */
+/*
+ * 对一个新对象的构造进行拦截
+ */
 public interface ConstructorInterceptor extends Interceptor  {
 
 	/**

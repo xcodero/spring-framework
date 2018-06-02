@@ -29,6 +29,9 @@ package org.springframework.aop;
  * @since 04.04.2003
  * @see IntroductionInterceptor
  */
+/*
+ * 执行一个或多个AOP引入的增强器的父接口
+ */
 public interface IntroductionAdvisor extends Advisor, IntroductionInfo {
 
 	/**

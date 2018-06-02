@@ -33,6 +33,9 @@ import org.springframework.lang.Nullable;
  * @author Rod Johnson
  * @author Juergen Hoeller
  */
+/*
+ * 目标源接口，该接口用来获得AOP调用的当前"目标"
+ */
 public interface TargetSource extends TargetClassAware {
 
 	/**

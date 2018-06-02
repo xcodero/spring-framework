@@ -28,6 +28,9 @@ import java.lang.reflect.Method;
  * @author Rod Johnson
  * @see MethodInterceptor
  */
+/*
+ * 描述对方法的一次调用，一旦方法调用就会被传递给拦截器。
+ */
 public interface MethodInvocation extends Invocation {
 
 	/**

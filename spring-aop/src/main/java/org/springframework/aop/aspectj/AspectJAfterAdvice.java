@@ -16,19 +16,23 @@
 
 package org.springframework.aop.aspectj;
 
-import java.io.Serializable;
-import java.lang.reflect.Method;
-
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-
 import org.springframework.aop.AfterAdvice;
+
+import java.io.Serializable;
+import java.lang.reflect.Method;
 
 /**
  * Spring AOP advice wrapping an AspectJ after advice method.
  *
  * @author Rod Johnson
  * @since 2.0
+ */
+/*
+ * 1.MethodBeforeAdviceInterceptor实现了MethodInterceptor接口，并关联一个MethodBeforeAdvice；
+ * 2.AspectJAfterAdvice本身既是通知，也是方法拦截器；
+ * 3.因此，前置通知（增强）和后置通知（增强）的实现略有不同。
  */
 @SuppressWarnings("serial")
 public class AspectJAfterAdvice extends AbstractAspectJAdvice

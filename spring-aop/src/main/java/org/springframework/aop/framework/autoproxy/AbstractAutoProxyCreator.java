@@ -451,35 +451,50 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	 * @return the AOP proxy for the bean
 	 * @see #buildAdvisors
 	 */
+	/*
+	 * 为传入的bean创建AOP代理
+	 */
 	protected Object createProxy(Class<?> beanClass, @Nullable String beanName,
 			@Nullable Object[] specificInterceptors, TargetSource targetSource) {
 
+		// 0.设置bean工厂中beanName对应的可能经过合并的bean定义中的属性，记录下targetClass
 		if (this.beanFactory instanceof ConfigurableListableBeanFactory) {
 			AutoProxyUtils.exposeTargetClass((ConfigurableListableBeanFactory) this.beanFactory, beanName, beanClass);
 		}
 
+		// 1.新建ProxyFactory对象
 		ProxyFactory proxyFactory = new ProxyFactory();
+		// 1.1 设置ProxyFactory对象中的相关配置属性
 		proxyFactory.copyFrom(this);
 
+		// 2.根据情况设置ProxyFactory对象的proxyTargetClass属性或向ProxyFactory对象中添加被代理的接口
 		if (!proxyFactory.isProxyTargetClass()) {
+			// 2.1 检查bean定义中的org.springframework.aop.framework.autoproxy.AutoProxyUtils.preserveTargetClass属性
 			if (shouldProxyTargetClass(beanClass, beanName)) {
 				proxyFactory.setProxyTargetClass(true);
 			}
+			// 2.2 根据beanClass的类型层次决定只是代理接口还是整个目标类
 			else {
 				evaluateProxyInterfaces(beanClass, proxyFactory);
 			}
 		}
 
+		// 3.为给定bean构建通知器，并加入到ProxyFactory对象中
 		Advisor[] advisors = buildAdvisors(beanName, specificInterceptors);
 		proxyFactory.addAdvisors(advisors);
+		// 4.设置ProxyFactory对象的targetSource属性
 		proxyFactory.setTargetSource(targetSource);
+		// 5.自定义代理工厂（这是一个模板方法）
 		customizeProxyFactory(proxyFactory);
 
+		// 6.设置ProxyFactory对象的frozen属性
 		proxyFactory.setFrozen(this.freezeProxy);
+		// 7.设置ProxyFactory对象的preFiltered属性
 		if (advisorsPreFiltered()) {
 			proxyFactory.setPreFiltered(true);
 		}
 
+		// 8.获取代理对象
 		return proxyFactory.getProxy(getProxyClassLoader());
 	}
 
@@ -519,13 +534,20 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	 * specific to this bean (may be empty, but not null)
 	 * @return the list of Advisors for the given bean
 	 */
+	/*
+	 * 为给定的bean构建通知器，包括指定的拦截器和公共的拦截器，都适配成Advisor接口。
+	 */
 	protected Advisor[] buildAdvisors(@Nullable String beanName, @Nullable Object[] specificInterceptors) {
 		// Handle prototypes correctly...
+		// 1.将公共拦截器包装为Advisor
 		Advisor[] commonInterceptors = resolveInterceptorNames();
 
+		// 2.根据配置顺序收集所有的拦截器
 		List<Object> allInterceptors = new ArrayList<>();
 		if (specificInterceptors != null) {
+			// 2.1先放入传入的拦截器
 			allInterceptors.addAll(Arrays.asList(specificInterceptors));
+			// 2.2再根据配置放入公共的拦截器
 			if (commonInterceptors.length > 0) {
 				if (this.applyCommonInterceptorsFirst) {
 					allInterceptors.addAll(0, Arrays.asList(commonInterceptors));
@@ -542,6 +564,8 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 					" common interceptors and " + nrOfSpecificInterceptors + " specific interceptors");
 		}
 
+		// 3.遍历所有的拦截器（包括公共拦截器和传入的拦截器），将拦截器包装为Advisor实例
+		// 提示：由于Spring中涉及各种拦截器、通知器、通知方法，需统一封装为Advisor来为代理创建做准备
 		Advisor[] advisors = new Advisor[allInterceptors.size()];
 		for (int i = 0; i < allInterceptors.size(); i++) {
 			advisors[i] = this.advisorAdapterRegistry.wrap(allInterceptors.get(i));
@@ -552,6 +576,9 @@ public abstract class AbstractAutoProxyCreator extends ProxyProcessorSupport
 	/**
 	 * Resolves the specified interceptor names to Advisor objects.
 	 * @see #setInterceptorNames
+	 */
+	/*
+	 * 将该自动代理创建器中保存的interceptorNames（公共拦截器）包装为Advisor
 	 */
 	private Advisor[] resolveInterceptorNames() {
 		BeanFactory bf = this.beanFactory;

@@ -131,6 +131,7 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 
 		ProxyCreationContext.setCurrentProxiedBeanName(beanName);
 		try {
+			// 过滤已经得到的通知器，返回可以应用到给定bean的通知器
 			return AopUtils.findAdvisorsThatCanApply(candidateAdvisors, beanClass);
 		}
 		finally {
@@ -176,6 +177,9 @@ public abstract class AbstractAdvisorAutoProxyCreator extends AbstractAutoProxyC
 
 	/**
 	 * This auto-proxy creator always returns pre-filtered Advisors.
+	 */
+	/*
+	 * 该自动代理创建器总是返回已经过滤过的增强器（过滤后的增强器都是匹配bean的targetClass的增强器）。
 	 */
 	@Override
 	protected boolean advisorsPreFiltered() {

@@ -16,6 +16,14 @@
 
 package org.springframework.aop.support;
 
+import org.springframework.aop.*;
+import org.springframework.core.BridgeMethodResolver;
+import org.springframework.core.MethodIntrospector;
+import org.springframework.lang.Nullable;
+import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
+import org.springframework.util.ReflectionUtils;
+
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -24,22 +32,6 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-
-import org.springframework.aop.Advisor;
-import org.springframework.aop.AopInvocationException;
-import org.springframework.aop.IntroductionAdvisor;
-import org.springframework.aop.IntroductionAwareMethodMatcher;
-import org.springframework.aop.MethodMatcher;
-import org.springframework.aop.Pointcut;
-import org.springframework.aop.PointcutAdvisor;
-import org.springframework.aop.SpringProxy;
-import org.springframework.aop.TargetClassAware;
-import org.springframework.core.BridgeMethodResolver;
-import org.springframework.core.MethodIntrospector;
-import org.springframework.lang.Nullable;
-import org.springframework.util.Assert;
-import org.springframework.util.ClassUtils;
-import org.springframework.util.ReflectionUtils;
 
 /**
  * Utility methods for AOP support code.
@@ -221,6 +213,7 @@ public abstract class AopUtils {
 	 * for this bean includes any introductions
 	 * @return whether the pointcut can apply on any method
 	 */
+	// 给定的切点是否能应用与传入的Class实例上？
 	public static boolean canApply(Pointcut pc, Class<?> targetClass, boolean hasIntroductions) {
 		Assert.notNull(pc, "Pointcut must not be null");
 		if (!pc.getClassFilter().matches(targetClass)) {
@@ -238,6 +231,7 @@ public abstract class AopUtils {
 			introductionAwareMethodMatcher = (IntroductionAwareMethodMatcher) methodMatcher;
 		}
 
+		// 获取targetClass以及targetClass类型层次中的所有接口
 		Set<Class<?>> classes = new LinkedHashSet<>();
 		if (!Proxy.isProxyClass(targetClass)) {
 			classes.add(ClassUtils.getUserClass(targetClass));
@@ -245,6 +239,7 @@ public abstract class AopUtils {
 		classes.addAll(ClassUtils.getAllInterfacesForClassAsSet(targetClass));
 
 		for (Class<?> clazz : classes) {
+			// 遍历每个Class实例中的所有方法，测试是否匹配
 			Method[] methods = ReflectionUtils.getAllDeclaredMethods(clazz);
 			for (Method method : methods) {
 				if ((introductionAwareMethodMatcher != null &&
@@ -266,6 +261,9 @@ public abstract class AopUtils {
 	 * @param targetClass class we're testing
 	 * @return whether the pointcut can apply on any method
 	 */
+	/*
+	 * 测试给定的通知器能否应用到给定的Class实例上
+	 */
 	public static boolean canApply(Advisor advisor, Class<?> targetClass) {
 		return canApply(advisor, targetClass, false);
 	}
@@ -277,13 +275,19 @@ public abstract class AopUtils {
 	 * @param advisor the advisor to check
 	 * @param targetClass class we're testing
 	 * @param hasIntroductions whether or not the advisor chain for this bean includes
-	 * any introductions
+	 * any introductions 适用于该bean的增强器链上是否包含了任何引入
 	 * @return whether the pointcut can apply on any method
 	 */
+	/*
+	 * 1.测试给定的通知器能否应用到给定的Class实例上；
+	 * 2.该版本考虑了"引入"
+	 */
 	public static boolean canApply(Advisor advisor, Class<?> targetClass, boolean hasIntroductions) {
+		// 对于引入增强器，只要进行类型匹配
 		if (advisor instanceof IntroductionAdvisor) {
 			return ((IntroductionAdvisor) advisor).getClassFilter().matches(targetClass);
 		}
+		// 对于切点增强器，委托给canApplay方法
 		else if (advisor instanceof PointcutAdvisor) {
 			PointcutAdvisor pca = (PointcutAdvisor) advisor;
 			return canApply(pca.getPointcut(), targetClass, hasIntroductions);
@@ -308,6 +312,7 @@ public abstract class AopUtils {
 		}
 		List<Advisor> eligibleAdvisors = new LinkedList<>();
 		for (Advisor candidate : candidateAdvisors) {
+			// 测试"引入增强器"是否匹配传入的Class实例
 			if (candidate instanceof IntroductionAdvisor && canApply(candidate, clazz)) {
 				eligibleAdvisors.add(candidate);
 			}
@@ -318,6 +323,7 @@ public abstract class AopUtils {
 				// already processed
 				continue;
 			}
+			// 测试普通的增强器是否匹配传入的Class实例
 			if (canApply(candidate, clazz, hasIntroductions)) {
 				eligibleAdvisors.add(candidate);
 			}

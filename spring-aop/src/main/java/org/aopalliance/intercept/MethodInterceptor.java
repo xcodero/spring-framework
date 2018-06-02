@@ -39,6 +39,9 @@ package org.aopalliance.intercept;
  *
  * @author Rod Johnson
  */
+/*
+ * 对某个接口上的调用进行拦截
+ */
 @FunctionalInterface
 public interface MethodInterceptor extends Interceptor {
 	

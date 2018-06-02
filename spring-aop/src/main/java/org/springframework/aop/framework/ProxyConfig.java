@@ -16,9 +16,9 @@
 
 package org.springframework.aop.framework;
 
-import java.io.Serializable;
-
 import org.springframework.util.Assert;
+
+import java.io.Serializable;
 
 /**
  * Convenience superclass for configuration used in creating proxies,
@@ -34,6 +34,7 @@ public class ProxyConfig implements Serializable {
 	private static final long serialVersionUID = -8409359707199703185L;
 
 
+	// 是否代理整个目标类，默认false
 	private boolean proxyTargetClass = false;
 
 	private boolean optimize = false;

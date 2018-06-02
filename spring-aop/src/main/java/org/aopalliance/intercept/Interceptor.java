@@ -64,6 +64,11 @@ import org.aopalliance.aop.Advice;
  * @author Rod Johnson
  * @see Joinpoint
  */
+/*
+ * 1、该接口表示一个通用的（"泛化"的含义）拦截器；
+ * 2、通用的拦截器可以拦截基础程序中发生的运行时事件，这些事件可通过连接点具体化，运行时连接点可以使调用、域访问、异常等；
+ * 3、不直接使用该接口，而是使用子接口拦截特定的事件。
+ */
 public interface Interceptor extends Advice {
 
 }

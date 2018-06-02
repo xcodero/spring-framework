@@ -16,15 +16,14 @@
 
 package org.springframework.aop.interceptor;
 
-import java.io.Serializable;
-
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
-
 import org.springframework.aop.Advisor;
 import org.springframework.aop.support.DefaultPointcutAdvisor;
 import org.springframework.core.NamedThreadLocal;
 import org.springframework.core.PriorityOrdered;
+
+import java.io.Serializable;
 
 /**
  * Interceptor that exposes the current {@link org.aopalliance.intercept.MethodInvocation}
@@ -39,6 +38,12 @@ import org.springframework.core.PriorityOrdered;
  *
  * @author Rod Johnson
  * @author Juergen Hoeller
+ */
+/*
+ * 1.将当前MethodInvocation暴露为ThreadLocal对象的拦截器；
+ * 2.少数情况下才会用到该拦截器，如当一个切点需要知道整个调用上下文时；
+ * 3.除非真的需要，否则不要使用该拦截器，因为目标对象通常不应该知道Spring AOP，这会引入对Spring API的依赖（目标对象应该尽可能的是POJO）；
+ * 4.如果使用该拦截器，通常是拦截器链的第一个拦截器。
  */
 @SuppressWarnings("serial")
 public class ExposeInvocationInterceptor implements MethodInterceptor, PriorityOrdered, Serializable {

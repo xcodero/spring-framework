@@ -377,6 +377,9 @@ public abstract class ClassUtils {
 	 * @param clazz the class to check
 	 * @return the user-defined class
 	 */
+	/*
+	 * 为传入的Class实例返回用户定义的Class实例：通常就是传入的Class实例，但如果传入的是CGLIB生成的子类会返回原来的类
+	 */
 	public static Class<?> getUserClass(Class<?> clazz) {
 		if (clazz.getName().contains(CGLIB_CLASS_SEPARATOR)) {
 			Class<?> superclass = clazz.getSuperclass();
@@ -1144,6 +1147,9 @@ public abstract class ClassUtils {
 	 * <p>If the class itself is an interface, it gets returned as sole interface.
 	 * @param clazz the class to analyze for interfaces
 	 * @return all interfaces that the given object implements as a Set
+	 */
+	/*
+	 * 返回给定Class实例实现的所有接口，包括每个祖先类实现的所有接口
 	 */
 	public static Set<Class<?>> getAllInterfacesForClassAsSet(Class<?> clazz) {
 		return getAllInterfacesForClassAsSet(clazz, null);

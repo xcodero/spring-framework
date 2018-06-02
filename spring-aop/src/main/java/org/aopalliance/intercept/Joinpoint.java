@@ -37,6 +37,14 @@ import java.lang.reflect.AccessibleObject;
  * @author Rod Johnson
  * @see Interceptor
  */
+/*
+ * 1、该接口表示一个通用的运行时连接点（AOP术语）；
+ * 2、一个运行时连接点是发生在一个静态连接点（即程序中的某个位置）上的事件，如一次调用就是一个方法（静态连接点）上的运行时连接点；
+ * 3、可通过getStaticPart方法获取给定连接点的静态部分；
+ *
+ * 4、在一个拦截框架的上下文中，运行时连接点是对可访问对象（——方法、构造器、域，即连接点的静态部分）某次访问的具体化，
+ * 它被传递给安装在静态连接点上的拦截器。
+ */
 public interface Joinpoint {
 
 	/**
@@ -46,6 +54,9 @@ public interface Joinpoint {
 	 * @return see the children interfaces' proceed definition
 	 * @throws Throwable if the joinpoint throws an exception
 	 */
+	/*
+	 * 进入（链中的）下一个拦截器
+	 */
 	Object proceed() throws Throwable;
 
 	/**
@@ -53,12 +64,18 @@ public interface Joinpoint {
 	 * <p>For instance, the target object for an invocation.
 	 * @return the object (can be null if the accessible object is static)
 	 */
+	/*
+	 * 返回持有当前连接点静态部分的对象
+	 */
 	Object getThis();
 
 	/**
 	 * Return the static part of this joinpoint.
 	 * <p>The static part is an accessible object on which a chain of
 	 * interceptors are installed.
+	 */
+	/*
+	 * 返回连接点的静态部分
 	 */
 	AccessibleObject getStaticPart();
 

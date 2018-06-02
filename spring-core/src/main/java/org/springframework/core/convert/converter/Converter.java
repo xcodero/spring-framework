@@ -30,6 +30,10 @@ import org.springframework.lang.Nullable;
  * @param <S> the source type
  * @param <T> the target type
  */
+/*
+ * 1、转换器
+ * 2、相当于JDK 1.8中的Function接口
+ */
 @FunctionalInterface
 public interface Converter<S, T> {
 

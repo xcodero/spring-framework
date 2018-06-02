@@ -27,6 +27,9 @@ package org.springframework.aop;
  * @see Pointcut
  * @see MethodMatcher
  */
+/*
+ * 类过滤器，用来测试切点或引入是否匹配某个Class实例
+ */
 @FunctionalInterface
 public interface ClassFilter {
 

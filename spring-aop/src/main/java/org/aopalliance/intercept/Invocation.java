@@ -24,6 +24,10 @@ package org.aopalliance.intercept;
  *
  * @author Rod Johnson
  */
+/*
+ * 1、该接口表示程序中的一次调用；
+ * 2、Invocation对象是一种连接点，会被拦截器拦截。
+ */
 public interface Invocation extends Joinpoint {
 
 	/**

@@ -29,7 +29,7 @@ import java.io.Serializable;
  * @since 2.0
  */
 /*
- * 这是一个装饰器，使得MetadataAwareAspectInstanceFactory只实例化一次。
+ * 这是一个装饰器，使得MetadataAwareAspectInstanceFactory只真正实例化一次切面。
  */
 @SuppressWarnings("serial")
 public class LazySingletonAspectInstanceFactoryDecorator implements MetadataAwareAspectInstanceFactory, Serializable {

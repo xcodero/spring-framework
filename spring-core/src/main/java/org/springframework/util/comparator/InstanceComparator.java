@@ -16,10 +16,10 @@
 
 package org.springframework.util.comparator;
 
-import java.util.Comparator;
-
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import java.util.Comparator;
 
 /**
  * Compares objects based on an arbitrary class order. Allows objects to be sorted based
@@ -35,6 +35,11 @@ import org.springframework.util.Assert;
  * @since 3.2
  * @see Comparator#thenComparing(Comparator)
  * @param <T> the type of objects being compared
+ */
+/*
+ * 1.实例比较器，根据对象的赋值兼容类型顺序进行排序；
+ * 2.类型顺序由实例比较器的构造器参数指定；
+ * 3.若需进一步比较该构造器判断为相等情形下的两个对象，可使用Comparator#thenComparing。
  */
 public class InstanceComparator<T> implements Comparator<T> {
 

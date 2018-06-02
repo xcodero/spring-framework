@@ -28,6 +28,9 @@ import java.lang.reflect.Constructor;
  * @author Rod Johnson
  * @see ConstructorInterceptor
  */
+/*
+ * 描述对构造器的一次调用，一旦构造器调用就会被传递给拦截器。
+ */
 public interface ConstructorInvocation extends Invocation {
 
     /**

@@ -83,10 +83,14 @@ public abstract class AbstractAspectJAdvisorFactory implements AspectJAdvisorFac
 	 * We need to detect this as "code-style" AspectJ aspects should not be
 	 * interpreted by Spring AOP.
 	 */
+	/*
+	 * 需要检测出"代码风格"的AspectJ切面（这种切面不由Spring AOP处理）。
+	 */
 	private boolean compiledByAjc(Class<?> clazz) {
 		// The AJTypeSystem goes to great lengths to provide a uniform appearance between code-style and
 		// annotation-style aspects. Therefore there is no 'clean' way to tell them apart. Here we rely on
 		// an implementation detail of the AspectJ compiler.
+		// AjTypeSystem力求对"代码风格"和"注解风格"的切面提供统一的外观，没有很"干净"的方式区分它们。因此，只能依靠AspectJ编译器的实现细节区分。
 		for (Field field : clazz.getDeclaredFields()) {
 			if (field.getName().startsWith(AJC_MAGIC)) {
 				return true;
@@ -95,6 +99,13 @@ public abstract class AbstractAspectJAdvisorFactory implements AspectJAdvisorFac
 		return false;
 	}
 
+	/*
+	 * 1、对给定的切面Class实例进行验证
+	 * 2、验证规则：
+	 * 		a) 如果其给定切面的父类也是一个切面，则它（给定切面的父类）必须是抽象的
+	 * 		b) 给定切面必须只用了@Aspect注解
+	 * 		c) 切面实例化模型不能是percflow、percflowbelow，因为Spring AOP不支持这两种切面实例化模型
+	 */
 	@Override
 	public void validate(Class<?> aspectClass) throws AopConfigException {
 		// If the parent has the annotation and isn't abstract it's an error
@@ -104,6 +115,9 @@ public abstract class AbstractAspectJAdvisorFactory implements AspectJAdvisorFac
 					aspectClass.getSuperclass().getName() + "]");
 		}
 
+		// 将Class实例，转换为AjType实例
+		// 提示1：AspectJ编程模型提供了自己的类型抽象AjType，而不使用JDK的类型抽象
+		// 提示2：AjTypeSystem工具类就是AspectJ运行时类型系统的锚API
 		AjType<?> ajType = AjTypeSystem.getAjType(aspectClass);
 		if (!ajType.isAspect()) {
 			throw new NotAnAtAspectException(aspectClass);
@@ -121,6 +135,9 @@ public abstract class AbstractAspectJAdvisorFactory implements AspectJAdvisorFac
 	/**
 	 * Find and return the first AspectJ annotation on the given method
 	 * (there <i>should</i> only be one anyway...)
+	 */
+	/*
+	 * 找到并返回给定方法的第一个AspectJ注解（实际上应该只有一个）
 	 */
 	@SuppressWarnings("unchecked")
 	@Nullable
@@ -162,6 +179,9 @@ public abstract class AbstractAspectJAdvisorFactory implements AspectJAdvisorFac
 	/**
 	 * Class modelling an AspectJ annotation, exposing its type enumeration and
 	 * pointcut String.
+	 */
+	/*
+	 * AspectJ注解——该类对AspectJ注解进行建模，用来暴露注解Class实例对应的AspectJAnnotationType枚举值、配置的切点表达式字符串。
 	 */
 	protected static class AspectJAnnotation<A extends Annotation> {
 
@@ -210,6 +230,7 @@ public abstract class AbstractAspectJAdvisorFactory implements AspectJAdvisorFac
 		}
 
 		private String resolveExpression(A annotation) throws Exception {
+			// 先检查value属性，再检查pointcut属性
 			for (String methodName : EXPRESSION_PROPERTIES) {
 				Method method;
 				try {
@@ -254,6 +275,10 @@ public abstract class AbstractAspectJAdvisorFactory implements AspectJAdvisorFac
 	/**
 	 * ParameterNameDiscoverer implementation that analyzes the arg names
 	 * specified at the AspectJ annotation level.
+	 */
+	/*
+	 * 1.AspectJ注解的参数名发现器；
+	 * 2.该类实现了参数名发现器接口，用于分析AspectJ注解中指定的参数名称。
 	 */
 	private static class AspectJAnnotationParameterNameDiscoverer implements ParameterNameDiscoverer {
 

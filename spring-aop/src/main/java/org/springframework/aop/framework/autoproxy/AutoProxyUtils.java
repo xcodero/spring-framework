@@ -29,6 +29,9 @@ import org.springframework.lang.Nullable;
  * @since 2.0.3
  * @see AbstractAutoProxyCreator
  */
+/*
+ * 自动代理感知组件的工具类，主要用于框架内部使用。
+ */
 public abstract class AutoProxyUtils {
 
 	/**
@@ -62,6 +65,10 @@ public abstract class AutoProxyUtils {
 	 * @param beanFactory the containing ConfigurableListableBeanFactory
 	 * @param beanName the name of the bean
 	 * @return whether the given bean should be proxied with its target class
+	 */
+	/*
+	 * 1.是代理给定bean的目标类而不是接口吗？
+	 * 2.检查bean定义中的org.springframework.aop.framework.autoproxy.AutoProxyUtils.preserveTargetClass属性
 	 */
 	public static boolean shouldProxyTargetClass(ConfigurableListableBeanFactory beanFactory, @Nullable String beanName) {
 		if (beanName != null && beanFactory.containsBeanDefinition(beanName)) {
