@@ -68,6 +68,10 @@ public interface ConfigurableApplicationContext extends ApplicationContext, Life
 	 * @since 2.5
 	 * @see org.springframework.instrument.classloading.LoadTimeWeaver
 	 */
+	/*
+	 * 1.工厂中LoadTimeWeaver类型bean的名称；
+	 * 2.如果提供了这样的bean，为了允许LoadTimeWeaver处理所有真正的bean类，上下文会使用临时的ClassLoader做类型匹配。
+	 */
 	String LOAD_TIME_WEAVER_BEAN_NAME = "loadTimeWeaver";
 
 	/**

@@ -27,6 +27,14 @@ import java.lang.instrument.Instrumentation;
  * @since 2.0
  * @see org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver
  */
+/*
+ * Java代理，将JVM传入的Instrumentation实例引用保存到静态域中，供后面使用。
+ *
+ * 提示1：如果JVM在启动时指定了代理类，它会将一个Instrumentation实例传递给代理类的premain方法；
+ * 提示2：JVM如何将Instrumentation实例传递给premain方法呢？——JVM调用premain方法呗；
+ * 提示3：premain方法本质上是一个钩子方法，由JVM调用；
+ * 提示4：本质就是该Instrumentation实例既能由JVM操作，也能由Java应用操作，即JVM和Java应用访问同一块对象内存。
+ */
 public class InstrumentationSavingAgent {
 
 	private static volatile Instrumentation instrumentation;

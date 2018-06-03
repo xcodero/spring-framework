@@ -658,7 +658,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 		// Detect a LoadTimeWeaver and prepare for weaving, if found.
 		if (beanFactory.containsBean(LOAD_TIME_WEAVER_BEAN_NAME)) {
-			beanFactory.addBeanPostProcessor(new LoadTimeWeaverAwareProcessor(beanFactory));
+			beanFactory.addBeanPostProcessor(new LoadTimeWeaverAwareProcessor(beanFactory)); //注册LoadTimeWeaverAwareProcessor实例
 			// Set a temporary ClassLoader for type matching.
 			beanFactory.setTempClassLoader(new ContextTypeMatchClassLoader(beanFactory.getBeanClassLoader()));
 		}

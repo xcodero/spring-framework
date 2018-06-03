@@ -75,6 +75,7 @@ class LoadTimeWeaverBeanDefinitionParser extends AbstractSingleBeanDefinitionPar
 
 		if (isAspectJWeavingEnabled(element.getAttribute(ASPECTJ_WEAVING_ATTRIBUTE), parserContext)) {
 			if (!parserContext.getRegistry().containsBeanDefinition(ASPECTJ_WEAVING_ENABLER_BEAN_NAME)) {
+				// 注册AspectJWeavingEnabler类型的bean
 				RootBeanDefinition def = new RootBeanDefinition(ASPECTJ_WEAVING_ENABLER_CLASS_NAME);
 				parserContext.registerBeanComponent(
 						new BeanComponentDefinition(def, ASPECTJ_WEAVING_ENABLER_BEAN_NAME));
@@ -87,12 +88,14 @@ class LoadTimeWeaverBeanDefinitionParser extends AbstractSingleBeanDefinitionPar
 	}
 
 	protected boolean isAspectJWeavingEnabled(String value, ParserContext parserContext) {
+		// 先检查<context:load-time-weaver/>元素的aspectj-weaving属性
 		if ("on".equals(value)) {
 			return true;
 		}
 		else if ("off".equals(value)) {
 			return false;
 		}
+		// 如果aspectj-weaving属性配置为autodetect，则根据有无META-INF/aop.xml配置文件确定
 		else {
 			// Determine default...
 			ClassLoader cl = parserContext.getReaderContext().getBeanClassLoader();

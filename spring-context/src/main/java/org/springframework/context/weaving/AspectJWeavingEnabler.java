@@ -16,12 +16,7 @@
 
 package org.springframework.context.weaving;
 
-import java.lang.instrument.ClassFileTransformer;
-import java.lang.instrument.IllegalClassFormatException;
-import java.security.ProtectionDomain;
-
 import org.aspectj.weaver.loadtime.ClassPreProcessorAgentAdapter;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
@@ -30,6 +25,10 @@ import org.springframework.core.Ordered;
 import org.springframework.instrument.classloading.InstrumentationLoadTimeWeaver;
 import org.springframework.instrument.classloading.LoadTimeWeaver;
 import org.springframework.lang.Nullable;
+
+import java.lang.instrument.ClassFileTransformer;
+import java.lang.instrument.IllegalClassFormatException;
+import java.security.ProtectionDomain;
 
 /**
  * Post-processor that registers AspectJ's
@@ -71,6 +70,7 @@ public class AspectJWeavingEnabler
 
 	@Override
 	public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+		// 此时loadTimeWeaver域已经被设置为DefaultContextLoadTimeWeaver类型的bean
 		enableAspectJWeaving(this.loadTimeWeaver, this.beanClassLoader);
 	}
 
@@ -80,6 +80,7 @@ public class AspectJWeavingEnabler
 	 * @param weaverToUse the LoadTimeWeaver to apply to (or {@code null} for a default weaver)
 	 * @param beanClassLoader the class loader to create a default weaver for (if necessary)
 	 */
+	// 注册ClassFileTransformer——向Instrumentation实例中添加ClassFileTransformer
 	public static void enableAspectJWeaving(
 			@Nullable LoadTimeWeaver weaverToUse, @Nullable ClassLoader beanClassLoader) {
 
@@ -101,6 +102,10 @@ public class AspectJWeavingEnabler
 	 * classes in order to avoid potential LinkageErrors.
 	 * @see org.springframework.context.annotation.LoadTimeWeavingConfiguration
 	 */
+	/*
+	 * 1.绕过AspectJ类的类文件转换器；
+	 * 2.ClassFileTransformer装饰器，用于抑制对AspectJ类的转换（对AspectJ类进行转换可能会引起LinkageError）；
+	 */
 	private static class AspectJClassBypassingClassFileTransformer implements ClassFileTransformer {
 
 		private final ClassFileTransformer delegate;
@@ -116,6 +121,7 @@ public class AspectJWeavingEnabler
 			if (className.startsWith("org.aspectj") || className.startsWith("org/aspectj")) {
 				return classfileBuffer;
 			}
+			// 调用被装饰的ClassFileTransformer对象的transform方法
 			return this.delegate.transform(loader, className, classBeingRedefined, protectionDomain, classfileBuffer);
 		}
 	}

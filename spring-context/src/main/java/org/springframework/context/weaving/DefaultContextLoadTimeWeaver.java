@@ -16,11 +16,8 @@
 
 package org.springframework.context.weaving;
 
-import java.lang.instrument.ClassFileTransformer;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.instrument.InstrumentationSavingAgent;
@@ -34,6 +31,8 @@ import org.springframework.instrument.classloading.weblogic.WebLogicLoadTimeWeav
 import org.springframework.instrument.classloading.websphere.WebSphereLoadTimeWeaver;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
+
+import java.lang.instrument.ClassFileTransformer;
 
 /**
  * Default {@link LoadTimeWeaver} bean for use in an application context,
@@ -73,6 +72,7 @@ public class DefaultContextLoadTimeWeaver implements LoadTimeWeaver, BeanClassLo
 
 	@Override
 	public void setBeanClassLoader(ClassLoader classLoader) {
+		// 1、根据ClassLoader获取服务器特定的LoadTimeWeaver对象
 		LoadTimeWeaver serverSpecificLoadTimeWeaver = createServerSpecificLoadTimeWeaver(classLoader);
 		if (serverSpecificLoadTimeWeaver != null) {
 			if (logger.isInfoEnabled()) {
@@ -81,10 +81,12 @@ public class DefaultContextLoadTimeWeaver implements LoadTimeWeaver, BeanClassLo
 			}
 			this.loadTimeWeaver = serverSpecificLoadTimeWeaver;
 		}
+		// 2、若未获取到，看是否有Instrumentation实例，如果有则新建InstrumentationLoadTimeWeaver实例
 		else if (InstrumentationLoadTimeWeaver.isInstrumentationAvailable()) {
-			logger.info("Found Spring's JVM agent for instrumentation");
+			logger.info("Found Spring's JVM agent for instrumentation"); // 找到了Spring提供的（保存Instrumentation实例的）JVM代理
 			this.loadTimeWeaver = new InstrumentationLoadTimeWeaver(classLoader);
 		}
+		// 3、否则，新建ReflectiveLoadTimeWeaver实例
 		else {
 			try {
 				this.loadTimeWeaver = new ReflectiveLoadTimeWeaver(classLoader);
@@ -105,6 +107,10 @@ public class DefaultContextLoadTimeWeaver implements LoadTimeWeaver, BeanClassLo
 	 * server-agnostic weaver. This non-failure logic is required since
 	 * determining a load-time weaver based on the ClassLoader name alone may
 	 * legitimately fail due to other mismatches.
+	 */
+	/*
+	 * 1.该方法永远不会失败，允许走其他可能的分支来使用服务器未知时的织入器；
+	 * 2.该方法中永不失败的逻辑还是要的，因为只基于ClassLoader名称进行匹配，可能会因其他不匹配而合法地测试失败。
 	 */
 	@Nullable
 	protected LoadTimeWeaver createServerSpecificLoadTimeWeaver(ClassLoader classLoader) {
@@ -146,6 +152,7 @@ public class DefaultContextLoadTimeWeaver implements LoadTimeWeaver, BeanClassLo
 	}
 
 
+	// 委托给this.loadTimeWeaver的addTransformer方法
 	@Override
 	public void addTransformer(ClassFileTransformer transformer) {
 		Assert.state(this.loadTimeWeaver != null, "Not initialized");
