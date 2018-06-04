@@ -40,7 +40,9 @@ import org.springframework.lang.Nullable;
  * @see ConfigurableBeanFactory#addBeanPostProcessor
  * @see BeanFactoryPostProcessor
  */
-// 1.用于自定义修改新建bean实例的工厂钩子，如检查标记接口或引入代理包装bean实例
+// 1.用于修改新建bean实例的工厂钩子，如检查标记接口或用代理包装bean实例；
+// 2.应用上下文可以自动检测到BeanPostProcessor类型bean，并把它们应用到任何bean后续的创建过程中；
+// 3.朴素的bean工厂允许以编程的方式注册后处理器，将它们应用到该工厂创建的所有bean上。
 public interface BeanPostProcessor {
 
 	/**

@@ -538,7 +538,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * @see #autowireConstructor
 	 */
 	/*
-	 * 真正地创建指定bean。
+	 * 1.真正地创建指定bean；
+	 * 2.该方法中还包括一些创建前的处理，如检查postProcessBeforeInstantiation回调。
 	 */
 	protected Object doCreateBean(final String beanName, final RootBeanDefinition mbd, final @Nullable Object[] args)
 			throws BeanCreationException {
