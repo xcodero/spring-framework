@@ -98,7 +98,7 @@ class ConstructorResolver {
 		ArgumentsHolder argsHolderToUse = null;
 		Object[] argsToUse = null;
 
-		// 2.1 如果调用getBean方法时指定构造器参数值，直接使用
+		// 2.1 如果传入的explicitArgs参数（来自调用getBean方法时指定的构造器参数值）不为空，直接使用
 		if (explicitArgs != null) {
 			argsToUse = explicitArgs;
 		}

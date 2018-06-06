@@ -35,6 +35,12 @@ import org.springframework.beans.factory.config.BeanPostProcessor;
  * @since 2.5
  * @see org.springframework.beans.factory.config.ConfigurableBeanFactory#getMergedBeanDefinition
  */
+/*
+ * 1.可能经过合并的bean定义的后处理器回调接口；
+ * 2.BeanPostProcessor实现可以实现该子接口，用于后处理bean工厂用来创建bean实例的可能经过合并的bean定义（是原来bean定义的拷贝）；
+ * 3.postProcessMergedBeanDefinition方法可能内省bean定义，用于在后处理bean的真正实例前准备一些缓存的元数据；
+ * 4.也可能修改bean定义，但只修改实际上设计为并发修改的定义属性；
+ */
 public interface MergedBeanDefinitionPostProcessor extends BeanPostProcessor {
 
 	/**

@@ -55,8 +55,15 @@ public interface BeanPostProcessor {
 	 * @param beanName the name of the bean
 	 * @return the bean instance to use, either the original or a wrapped one;
 	 * if {@code null}, no subsequent BeanPostProcessors will be invoked
+	 * 返回原来的或包装的bean实例；如果返回null，后续的BeanPostProcessor将不再调用
 	 * @throws org.springframework.beans.BeansException in case of errors
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet
+	 */
+	/*
+	 * 1.在任何bean初始化回调（如InitializingBean#afterPropertiesSet、自定义init-method）前将该BeanPostProcessor应用到给定的新建bean实例上；
+	 * 2.给定bean已经填充了属性值；
+	 * 3.返回的bean实例可能是原来bean实例的包装器；
+	 * 4.默认实现原封不动的返回给定bean。
 	 */
 	@Nullable
 	default Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
@@ -83,6 +90,15 @@ public interface BeanPostProcessor {
 	 * @throws org.springframework.beans.BeansException in case of errors
 	 * @see org.springframework.beans.factory.InitializingBean#afterPropertiesSet
 	 * @see org.springframework.beans.factory.FactoryBean
+	 */
+	/*
+	 * 1.在任何bean初始化回调（如InitializingBean#afterPropertiesSet、自定义init-method）后将该BeanPostProcessor应用到给定的新建bean实例上；
+	 * 2.给定bean已经填充了属性值；
+	 * 3.返回的bean实例可能是原来bean实例的包装器；
+	 * 4.如果是工厂bean，对于FactoryBean实例和FactoryBean生产的对象，该方法都会被调用；
+	 * 5.后处理器通过相应的instanceof测试能确定是否应用到FactoryBean或生产的对象或同时应用到两者；
+	 * 6.在InstantiationAwareBeanPostProcessor#postProcessBeforeInstantiation方法触发短路的情况下，该回调仍然会被调用，
+	 * 其他的BeanPostProcessor回调则不会。
 	 */
 	@Nullable
 	default Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {

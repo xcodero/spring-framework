@@ -413,6 +413,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		return initializeBean(beanName, existingBean, null);
 	}
 
+	// 1.在初始化前应用所有BeanPostProcessor；
+	// 2.如果某个BeanPostProcessor#postProcessBeforeInitialization返回null，则返回之前的对象
 	@Override
 	public Object applyBeanPostProcessorsBeforeInitialization(Object existingBean, String beanName)
 			throws BeansException {
@@ -428,6 +430,8 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		return result;
 	}
 
+	// 1.在初始化后应用所有BeanPostProcessor；
+	// 2.如果某个BeanPostProcessor#postProcessAfterInitialization返回null，则返回之前的对象
 	@Override
 	public Object applyBeanPostProcessorsAfterInitialization(Object existingBean, String beanName)
 			throws BeansException {
@@ -491,7 +495,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 					beanName, "Validation of method overrides failed", ex);
 		}
 
-		// 3.解析"实例化前"短路bean（给BeanPostProcessor列表一个机会来返回代理代替目标bean实例，AOP功能便是基于此）
+		// 3.解析"实例化前"短路结果bean（给BeanPostProcessor列表一个机会来返回代理代替目标bean实例，AOP功能便是基于此）
 		try {
 			// Give BeanPostProcessors a chance to return a proxy instead of the target bean instance.
 			Object bean = resolveBeforeInstantiation(beanName, mbdToUse);
@@ -538,7 +542,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * @see #autowireConstructor
 	 */
 	/*
-	 * 1.真正地创建指定bean；
+	 * 1.真正地创建指定bean（干活的）；
 	 * 2.该方法中还包括一些创建前的处理，如检查postProcessBeforeInstantiation回调。
 	 */
 	protected Object doCreateBean(final String beanName, final RootBeanDefinition mbd, final @Nullable Object[] args)
@@ -674,7 +678,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * (also signals that the returned {@code Class} will never be exposed to application code)
 	 * @return the type for the bean if determinable, or {@code null} otherwise
 	 */
-	// 确定给定bean定义的目标类型（工厂方法的返回类型或解析bean的Class实例）
+	// 确定给定bean定义的目标类型（工厂方法的返回类型或bean的Class实例）
 	@Nullable
 	protected Class<?> determineTargetType(String beanName, RootBeanDefinition mbd, Class<?>... typesToMatch) {
 		Class<?> targetType = mbd.getTargetType();
@@ -1044,7 +1048,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * @return the shortcut-determined bean instance, or {@code null} if none 引起短路的bean实例，或null
 	 */
 	/*
-	 * 应用"实例化前"后处理器，解析指定bean是否存在"实例化前"短路
+	 * 应用"实例化前"后处理器，解析指定bean上是否存在"实例化前"短路现象。
 	 */
 	@Nullable
 	protected Object resolveBeforeInstantiation(String beanName, RootBeanDefinition mbd) {
@@ -1052,9 +1056,13 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 		if (!Boolean.FALSE.equals(mbd.beforeInstantiationResolved)) {
 			// Make sure bean class is actually resolved at this point.
 			if (!mbd.isSynthetic() && hasInstantiationAwareBeanPostProcessors()) {
+				// 1.确定目标Class实例（工厂方法的返回类型或bean的Class实例）
 				Class<?> targetType = determineTargetType(beanName, mbd);
+				// 2.如果目标Class实例不为null，才应用BeanPostProcessor
 				if (targetType != null) {
+					// 2.1 应用postProcessBeforeInstantiation回调
 					bean = applyBeanPostProcessorsBeforeInstantiation(targetType, beanName);
+					// 2.2 如果发生短路，应用postProcessBeforeInstantiation回调
 					if (bean != null) {
 						bean = applyBeanPostProcessorsAfterInitialization(bean, beanName);
 					}
@@ -1077,7 +1085,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * @see InstantiationAwareBeanPostProcessor#postProcessBeforeInstantiation
 	 */
 	// 1.将若干个InstantiationAwareBeanPostProcessor应用到（通过class、name）指定bean定义；
-	// 2.任何返回的对象都会被用作bean，不再真正实例化目标bean；
+	// 2.任何返回的对象都会作为结果，不再真正实例化目标bean；
 	// 3.只有返回null，才会导致目标bean的实例化
 	@Nullable
 	protected Object applyBeanPostProcessorsBeforeInstantiation(Class<?> beanClass, String beanName) {
@@ -1124,24 +1132,24 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			return obtainFromSupplier(instanceSupplier, beanName);
 		}
 
-		// 3.如果<bean/>元素配置了factory-method属性，则使用工厂方法实例化策略
+		// 3.如果<bean/>元素配置了factory-method属性，使用工厂方法实例化策略
 		if (mbd.getFactoryMethodName() != null)  {
 			return instantiateUsingFactoryMethod(beanName, mbd, args);
 		}
 
 		// Shortcut when re-creating the same bean...
-		// 4.如果实参中未明确指定构造器或工厂方法参数，检查是否解析过、是否需要自动连线
+		// 4.如果未显式传入构造器或工厂方法参数，则检查构造器或工厂方法是否解析过、构造器参数是否解析过（即是否需要自动连线）
 		boolean resolved = false;
 		boolean autowireNecessary = false;
 		if (args == null) {
 			synchronized (mbd.constructorArgumentLock) {
-				if (mbd.resolvedConstructorOrFactoryMethod != null) {
+				if (mbd.resolvedConstructorOrFactoryMethod != null) {	// 已经缓存了解析的构造器或工厂方法
 					resolved = true;
-					autowireNecessary = mbd.constructorArgumentsResolved;
+					autowireNecessary = mbd.constructorArgumentsResolved;	// 构造器参数解析了吗？
 				}
 			}
 		}
-		// 5.如果已经解析过并需要自动连线，则使用构造器自动连线策略；否则使用默认构造器实例化策略
+		// 5.如果构造器或工厂方法已经解析、构造器参数也解析过，则使用构造器自动连线策略；否则使用默认构造器实例化策略
 		if (resolved) {
 			if (autowireNecessary) {
 				return autowireConstructor(beanName, mbd, null, null);

@@ -16,10 +16,10 @@
 
 package org.springframework.beans.factory.config;
 
-import java.lang.reflect.Constructor;
-
 import org.springframework.beans.BeansException;
 import org.springframework.lang.Nullable;
+
+import java.lang.reflect.Constructor;
 
 /**
  * Extension of the {@link InstantiationAwareBeanPostProcessor} interface,
@@ -35,6 +35,9 @@ import org.springframework.lang.Nullable;
  * @since 2.0.3
  * @see InstantiationAwareBeanPostProcessorAdapter
  */
+// 1.这是InstantiationAwareBeanPostProcessor的一个子接口，增加了一个预测被处理bean最终类型的回调；
+// 2.该接口是一个特殊用途接口，主要用于框架内部使用；
+// 3.推荐实现BeanPostProcessor接口或继承InstantiationAwareBeanPostProcessorAdapter类，以免受该接口日后扩展的影响。
 public interface SmartInstantiationAwareBeanPostProcessor extends InstantiationAwareBeanPostProcessor {
 
 	/**
