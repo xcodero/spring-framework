@@ -306,6 +306,10 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * <p>If none specified, a default environment will be initialized via
 	 * {@link #createEnvironment()}.
 	 */
+	/*
+	 * 1、以可配置的形式返回该应用上下文的Environment对象，允许进一步定制；
+	 * 2、如未指定，则新建一个默认的Environment对象。
+	 */
 	@Override
 	public ConfigurableEnvironment getEnvironment() {
 		if (this.environment == null) {
@@ -581,6 +585,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * Prepare this context for refreshing, setting its startup date and
 	 * active flag as well as performing any initialization of property sources.
 	 */
+	/*
+	 * 为刷新准备好该上下文——设置启动日期、激活标记，并进行属性源的所有初始化工作。
+	 */
 	protected void prepareRefresh() {
 		this.startupDate = System.currentTimeMillis();
 		this.closed.set(false);
@@ -591,10 +598,12 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		}
 
 		// Initialize any placeholder property sources in the context environment
+		// 初始化所有占位符（桩）属性源——模板方法（留给子类覆盖）
 		initPropertySources();
 
 		// Validate that all properties marked as required are resolvable
 		// see ConfigurablePropertyResolver#setRequiredProperties
+		// 验证必需的属性都是可解析的
 		getEnvironment().validateRequiredProperties();
 
 		// Allow for the collection of early ApplicationEvents,
@@ -607,6 +616,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * @see org.springframework.core.env.PropertySource.StubPropertySource
 	 * @see org.springframework.web.context.support.WebApplicationContextUtils#initServletPropertySources
 	 */
+	// 1.将所有桩属性源替换为真正实例；
+	// 2.留给子类覆盖。
 	protected void initPropertySources() {
 		// For subclasses: do nothing by default.
 	}

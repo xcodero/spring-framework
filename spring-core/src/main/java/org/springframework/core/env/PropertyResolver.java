@@ -111,6 +111,9 @@ public interface PropertyResolver {
 	 * or if any placeholders are unresolvable
 	 * @see org.springframework.util.SystemPropertyUtils#resolvePlaceholders(String, boolean)
 	 */
+	/*
+	 * 解析给定文本中的${...}占位符，用从getProperty方法获得的属性值替换它们。不可解析的占位符、又无默认值的话，会抛出IllegalArgumentException。
+	 */
 	String resolveRequiredPlaceholders(String text) throws IllegalArgumentException;
 
 }
