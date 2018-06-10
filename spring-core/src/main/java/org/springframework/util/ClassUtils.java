@@ -170,13 +170,19 @@ public abstract class ClassUtils {
 	 * {@code Class.forName}, which accepts a {@code null} ClassLoader
 	 * reference as well).
 	 * @return the default ClassLoader (only {@code null} if even the system
-	 * ClassLoader isn't accessible)
+	 * ClassLoader isn't accessible) 返回默认的ClassLoader（只有当系统ClassLoader也无法访问时才返回null）
 	 * @see Thread#getContextClassLoader()
 	 * @see ClassLoader#getSystemClassLoader()
+	 */
+	/*
+	 * 1.返回默认ClassLoader——典型地，如果当前线程有上下文ClassLoader，则返回它；否则，返回加载ClassUtils类的ClassLoader作为后备；
+	 * 2.当你想使用线程的上下文ClassLoader、又希望获得一个非null的ClassLoader引用，即可调用该方法；
+	 * 3.例如，用于类路径资源加载，可调用该方法；但对Class.forName(String, boolean, ClassLoader)则不一定要调用该方法，因为它的ClassLoader形参接受null。
 	 */
 	@Nullable
 	public static ClassLoader getDefaultClassLoader() {
 		ClassLoader cl = null;
+		// 1.先尝试获取线程的上下文ClassLoader
 		try {
 			cl = Thread.currentThread().getContextClassLoader();
 		}
@@ -185,10 +191,12 @@ public abstract class ClassUtils {
 		}
 		if (cl == null) {
 			// No thread context class loader -> use class loader of this class.
+			// 2.再尝试获取加载ClassUtils类的ClassLoader
 			cl = ClassUtils.class.getClassLoader();
 			if (cl == null) {
 				// getClassLoader() returning null indicates the bootstrap ClassLoader
 				try {
+					// 3.最后尝试获取系统类加载器（只有当加载ClassUtils类的ClassLoader是引导类加载器时）
 					cl = ClassLoader.getSystemClassLoader();
 				}
 				catch (Throwable ex) {

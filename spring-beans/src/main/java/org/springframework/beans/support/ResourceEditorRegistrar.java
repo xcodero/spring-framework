@@ -58,6 +58,11 @@ import org.springframework.core.io.support.ResourcePatternResolver;
  * @author Chris Beams
  * @since 2.0
  */
+/*
+ * 1.资源编辑器注册员，是PropertyEditorRegistrar的实现；
+ * 2.该实现向给定的PropertyEditorRegistry（典型地，用于ApplicationContext内bean创建的BeanWrapper对象）注册资源编辑器；
+ * 3.被AbstractApplicationContext使用。
+ */
 public class ResourceEditorRegistrar implements PropertyEditorRegistrar {
 
 	private final PropertyResolver propertyResolver;
@@ -123,6 +128,9 @@ public class ResourceEditorRegistrar implements PropertyEditorRegistrar {
 	/**
 	 * Override default editor, if possible (since that's what we really mean to do here);
 	 * otherwise register as a custom editor.
+	 */
+	/*
+	 * 如果可能的话，覆盖createDefaultEditors方法注册的默认编辑器（这是此处真正想做的）；否则，注册一个自定义编辑器。
 	 */
 	private void doRegisterEditor(PropertyEditorRegistry registry, Class<?> requiredType, PropertyEditor editor) {
 		if (registry instanceof PropertyEditorRegistrySupport) {

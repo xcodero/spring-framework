@@ -42,6 +42,15 @@ import org.springframework.beans.BeansException;
  * @see BeanPostProcessor
  * @see PropertyResourceConfigurer
  */
+/*
+ * 1.用来定制对应用上下文中bean定义的修改，调整底层bean工厂的bean属性值；
+ * 2.应用上下文可从其bean定义中自动检测BeanFactoryPostProcessor类型bean，并在创建其他bean之前应用它们；
+ * 3.可用于定制定位于系统管理员的配置文件，会覆盖应用上下文中配置的bean属性；
+ * 4.可参见PropertyResourceConfigurer及其具体实现——它们是处理这类配置问题的开箱即用的解决方案；
+ * 5.BeanFactoryPostProcessor可以读取和修改bean定义，而不是bean实例；
+ * 5.1 如果用BeanFactoryPostProcessor跟bean实例交互，可能过早地bean实例化，这违反了容器，且会引起意想不到的副作用；
+ * 5.2 如果需要与bean实例交互，应实现BeanPostProcessor接口。
+ */
 @FunctionalInterface
 public interface BeanFactoryPostProcessor {
 

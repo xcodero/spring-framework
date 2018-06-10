@@ -252,6 +252,9 @@ class BeanDefinitionValueResolver {
 	 * @param value the original value (may be an expression)
 	 * @return the resolved value if necessary, or the original String value
 	 */
+	/*
+	 * 如果需要，将给定的字符串value作为表达式进行计算。
+	 */
 	@Nullable
 	private Object doEvaluate(@Nullable String value) {
 		return this.beanFactory.evaluateBeanDefinitionString(value, this.beanDefinition);

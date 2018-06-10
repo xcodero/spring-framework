@@ -28,6 +28,9 @@ import org.springframework.lang.Nullable;
  * @author Mark Fisher
  * @since 2.5
  */
+/*
+ * 策略接口，用来确定某个bean定义是否能作为给定依赖的自动连线候选人。
+ */
 public interface AutowireCandidateResolver {
 
 	/**

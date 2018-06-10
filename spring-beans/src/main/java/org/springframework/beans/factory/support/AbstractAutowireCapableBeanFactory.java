@@ -1614,6 +1614,10 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 	 * @param bw the BeanWrapper wrapping the target object
 	 * @param pvs the new property values
 	 */
+	/*
+	 * 1.应用给定的属性值，解析对该bean工厂中其他bean的任何运行时引用；
+	 * 2.必须使用深拷贝，我们才不会永久地更改该属性。
+	 */
 	protected void applyPropertyValues(String beanName, BeanDefinition mbd, BeanWrapper bw, PropertyValues pvs) {
 		if (pvs.isEmpty()) {
 			return;
@@ -1645,6 +1649,7 @@ public abstract class AbstractAutowireCapableBeanFactory extends AbstractBeanFac
 			original = Arrays.asList(pvs.getPropertyValues());
 		}
 
+		// 获取自定义的TypeConverter，并用来新建BeanDefinitionValueResolver对象
 		TypeConverter converter = getCustomTypeConverter();
 		if (converter == null) {
 			converter = bw;

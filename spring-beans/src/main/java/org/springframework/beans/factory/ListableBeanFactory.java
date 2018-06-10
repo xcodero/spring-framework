@@ -55,6 +55,15 @@ import java.util.Map;
  * @see HierarchicalBeanFactory
  * @see BeanFactoryUtils
  */
+/*
+ * 1.如果bean工厂能够枚举出它的所有bean实例，而不是像客户端请求时那样一个一个地根据名称查找，便可实现该接口；
+ * 2.预加载其所有bean定义（如基于XML的bean工厂）的BeanFactory实现可以实现该接口。
+ *
+ * 3.如果是一个HierarchicalBeanFactory，返回值并不会考虑BeanFactory层次，只会考虑当前工厂中定义的bean；
+ * 4.要考虑祖先工厂中的bean的话，使用BeanFactoryUtils辅助类即可；
+ *
+ * 5.该接口中的方法只会考虑该工厂中的bean定义；
+ */
 public interface ListableBeanFactory extends BeanFactory {
 
 	/**

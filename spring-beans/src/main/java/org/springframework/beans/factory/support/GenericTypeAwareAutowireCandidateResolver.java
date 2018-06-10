@@ -16,8 +16,6 @@
 
 package org.springframework.beans.factory.support;
 
-import java.lang.reflect.Method;
-
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.FactoryBean;
@@ -28,6 +26,8 @@ import org.springframework.beans.factory.config.DependencyDescriptor;
 import org.springframework.core.ResolvableType;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ClassUtils;
+
+import java.lang.reflect.Method;
 
 /**
  * Basic {@link AutowireCandidateResolver} that performs a full generic type
@@ -40,6 +40,10 @@ import org.springframework.util.ClassUtils;
  *
  * @author Juergen Hoeller
  * @since 4.0
+ */
+/*
+ * 1.泛型感知的自动连线候选人解析器；
+ * 2.如果依赖声明为泛型（如Repository<Customer>），该实现可使用泛型信息对候选bean定义进行匹配检查。
  */
 public class GenericTypeAwareAutowireCandidateResolver extends SimpleAutowireCandidateResolver
 		implements BeanFactoryAware {

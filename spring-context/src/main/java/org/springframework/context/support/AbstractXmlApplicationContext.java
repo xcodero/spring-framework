@@ -16,8 +16,6 @@
 
 package org.springframework.context.support;
 
-import java.io.IOException;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.xml.ResourceEntityResolver;
@@ -25,6 +23,8 @@ import org.springframework.beans.factory.xml.XmlBeanDefinitionReader;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.Resource;
 import org.springframework.lang.Nullable;
+
+import java.io.IOException;
 
 /**
  * Convenient base class for {@link org.springframework.context.ApplicationContext}
@@ -77,20 +77,27 @@ public abstract class AbstractXmlApplicationContext extends AbstractRefreshableC
 	 * @see #initBeanDefinitionReader
 	 * @see #loadBeanDefinitions
 	 */
+	/*
+	 * 新建XmlBeanDefinitionReader实例来加载bean定义。
+	 */
 	@Override
 	protected void loadBeanDefinitions(DefaultListableBeanFactory beanFactory) throws BeansException, IOException {
 		// Create a new XmlBeanDefinitionReader for the given BeanFactory.
+		// 1.为给定beanFactory新建XmlBeanDefinitionReader实例
 		XmlBeanDefinitionReader beanDefinitionReader = new XmlBeanDefinitionReader(beanFactory);
 
 		// Configure the bean definition reader with this context's
 		// resource loading environment.
+		// 2.使用该上下文的"资源加载器环境"配置bean定义读取器
 		beanDefinitionReader.setEnvironment(this.getEnvironment());
 		beanDefinitionReader.setResourceLoader(this);
 		beanDefinitionReader.setEntityResolver(new ResourceEntityResolver(this));
 
 		// Allow a subclass to provide custom initialization of the reader,
 		// then proceed with actually loading the bean definitions.
+		// 3.允许子类自定义读取器的初始化过程
 		initBeanDefinitionReader(beanDefinitionReader);
+		// 4.真正加载bean定义
 		loadBeanDefinitions(beanDefinitionReader);
 	}
 
@@ -118,11 +125,17 @@ public abstract class AbstractXmlApplicationContext extends AbstractRefreshableC
 	 * @see #getResources
 	 * @see #getResourcePatternResolver
 	 */
+	/*
+	 * 1.使用给定的XmlBeanDefinitionReader加载bean定义；
+	 * 2.bean工厂的生命周期由AbstractRefreshableApplicationContext#refreshBeanFactory方法来处理，因此该方法只应该用来加载和/或注册bean定义。
+	 */
 	protected void loadBeanDefinitions(XmlBeanDefinitionReader reader) throws BeansException, IOException {
+		// 1.既根据表示配置的资源（Resource数组）加载bean定义
 		Resource[] configResources = getConfigResources();
 		if (configResources != null) {
 			reader.loadBeanDefinitions(configResources);
 		}
+		// 2.又根据表示配置的文件位置（String数组）加载bean定义
 		String[] configLocations = getConfigLocations();
 		if (configLocations != null) {
 			reader.loadBeanDefinitions(configLocations);
@@ -136,6 +149,11 @@ public abstract class AbstractXmlApplicationContext extends AbstractRefreshableC
 	 * this to provide pre-built Resource objects rather than location Strings.
 	 * @return an array of Resource objects, or {@code null} if none
 	 * @see #getConfigLocations()
+	 */
+	/*
+	 * 1.返回Resource对象的数组，表示用来构建该上下文的XML bean定义文件；
+	 * 2.默认实现返回null；
+	 * 3.子类可覆盖该实现，用来提供预先构建的Resource对象而不是位置字符串。
 	 */
 	@Nullable
 	protected Resource[] getConfigResources() {

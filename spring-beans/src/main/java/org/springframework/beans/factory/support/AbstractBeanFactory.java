@@ -75,6 +75,7 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	private ClassLoader beanClassLoader = ClassUtils.getDefaultClassLoader();
 
 	/** ClassLoader to temporarily resolve bean class names with, if necessary */
+	// 如果需要，用来临时解析beanClass名称的ClassLoader
 	@Nullable
 	private ClassLoader tempClassLoader;
 
@@ -1447,6 +1448,9 @@ public abstract class AbstractBeanFactory extends FactoryBeanRegistrySupport imp
 	 * @param beanDefinition the bean definition that the value comes from
 	 * @return the resolved value
 	 * @see #setBeanExpressionResolver
+	 */
+	/*
+	 * 计算bean定义中包含的传入的字符串，可能作为表达式来解析。
 	 */
 	@Nullable
 	protected Object evaluateBeanDefinitionString(@Nullable String value, @Nullable BeanDefinition beanDefinition) {

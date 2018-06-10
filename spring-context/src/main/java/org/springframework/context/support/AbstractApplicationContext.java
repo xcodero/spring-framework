@@ -243,6 +243,10 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * of the context bean if the context is itself defined as a bean.
 	 * @param id the unique id of the context
 	 */
+	/*
+	 * 1.设置该应用上下文的唯一id；
+	 * 2.id域的默认值为该上下文实例的对象id，或者，如果该上下文本身被定义成一个bean，则是上下文bean的名称。
+	 */
 	@Override
 	public void setId(String id) {
 		this.id = id;
@@ -520,12 +524,15 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	public void refresh() throws BeansException, IllegalStateException {
 		synchronized (this.startupShutdownMonitor) {
 			// Prepare this context for refreshing.
+			// 为刷新准备上下文（的环境）
 			prepareRefresh();
 
 			// Tell the subclass to refresh the internal bean factory.
+			// 获取刷新的bean工厂（新建DefaultListableBeanFactory实例、加载XML文件中的bean定义、返回bean工厂）
 			ConfigurableListableBeanFactory beanFactory = obtainFreshBeanFactory();
 
 			// Prepare the bean factory for use in this context.
+			// 配置给定bean工厂的"标准上下文特性"，开始进行功能扩展
 			prepareBeanFactory(beanFactory);
 
 			try {
@@ -586,7 +593,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * active flag as well as performing any initialization of property sources.
 	 */
 	/*
-	 * 为刷新准备好该上下文——设置启动日期、激活标记，并进行属性源的所有初始化工作。
+	 * 为刷新准备好该上下文——设置启动日期、激活标记，并初始化所有属性源。
 	 */
 	protected void prepareRefresh() {
 		this.startupDate = System.currentTimeMillis();
@@ -628,8 +635,13 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * @see #refreshBeanFactory()
 	 * @see #getBeanFactory()
 	 */
+	/*
+	 * 通知子类刷新内部的bean工厂
+	 */
 	protected ConfigurableListableBeanFactory obtainFreshBeanFactory() {
+		// 刷新上下文的底层bean工厂，包括：新建DefaultListableBeanFactory实例、加载XML文件中的bean定义、将BeanFactory实例记录到该上下文的beanFactory域中
 		refreshBeanFactory();
+		// 返回该上下文的beanFactory属性
 		ConfigurableListableBeanFactory beanFactory = getBeanFactory();
 		if (logger.isDebugEnabled()) {
 			logger.debug("Bean factory for " + getDisplayName() + ": " + beanFactory);
@@ -642,14 +654,22 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * such as the context's ClassLoader and post-processors.
 	 * @param beanFactory the BeanFactory to configure
 	 */
+	/*
+	 * 配置给定bean工厂的"标准上下文特性"，如上下文的类加载器、后处理器。
+	 */
 	protected void prepareBeanFactory(ConfigurableListableBeanFactory beanFactory) {
 		// Tell the internal bean factory to use the context's class loader etc.
+		// 1.设置bean工厂的beanClassLoader为该上下文的classLoader，并用ClassUtils.getDefaultClassLoader作为后备
 		beanFactory.setBeanClassLoader(getClassLoader());
+		// 2.设置bean工厂的beanExpressionResolver，用于解析SpEL表达式
 		beanFactory.setBeanExpressionResolver(new StandardBeanExpressionResolver(beanFactory.getBeanClassLoader()));
+		// 3.为bean工厂增加一个PropertyEditorRegistrar，用于注册一组PropertyEditor（实际上想覆盖或注册几个常用的默认编辑器）
 		beanFactory.addPropertyEditorRegistrar(new ResourceEditorRegistrar(this, getEnvironment()));
 
 		// Configure the bean factory with context callbacks.
+		// 4.向bean工厂中添加"上下文回调"(对应好几个Aware接口)的BeanPostProcessor
 		beanFactory.addBeanPostProcessor(new ApplicationContextAwareProcessor(this));
+		// 4.1 由于这些接口类型的依赖通过ApplicationContextAwareProcessor设置，因此自动连线时需忽略它们
 		beanFactory.ignoreDependencyInterface(EnvironmentAware.class);
 		beanFactory.ignoreDependencyInterface(EmbeddedValueResolverAware.class);
 		beanFactory.ignoreDependencyInterface(ResourceLoaderAware.class);
@@ -659,15 +679,18 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 		// BeanFactory interface not registered as resolvable type in a plain factory.
 		// MessageSource registered (and found for autowiring) as a bean.
+		// 5.为几个特殊的依赖类型注册自动连线对象
 		beanFactory.registerResolvableDependency(BeanFactory.class, beanFactory);
 		beanFactory.registerResolvableDependency(ResourceLoader.class, this);
 		beanFactory.registerResolvableDependency(ApplicationEventPublisher.class, this);
 		beanFactory.registerResolvableDependency(ApplicationContext.class, this);
 
 		// Register early post-processor for detecting inner beans as ApplicationListeners.
+		// 6.
 		beanFactory.addBeanPostProcessor(new ApplicationListenerDetector(this));
 
 		// Detect a LoadTimeWeaver and prepare for weaving, if found.
+		// 7.增加对"加载时织入"的支持
 		if (beanFactory.containsBean(LOAD_TIME_WEAVER_BEAN_NAME)) {
 			beanFactory.addBeanPostProcessor(new LoadTimeWeaverAwareProcessor(beanFactory)); //注册LoadTimeWeaverAwareProcessor实例
 			// Set a temporary ClassLoader for type matching.
@@ -675,6 +698,7 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 		}
 
 		// Register default environment beans.
+		// 8.注册默认的环境bean(包括：环境bean、系统属性bean、系统环境bean)
 		if (!beanFactory.containsLocalBean(ENVIRONMENT_BEAN_NAME)) {
 			beanFactory.registerSingleton(ENVIRONMENT_BEAN_NAME, getEnvironment());
 		}
@@ -701,7 +725,13 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * respecting explicit order if given.
 	 * <p>Must be called before singleton instantiation.
 	 */
+	/*
+	 * 1.实例化并调用所有注册的BeanFactoryPostProcessor类型bean，如果指定顺序则遵守顺序；
+	 * 2.必须在单例实例化前被调用。
+	 */
 	protected void invokeBeanFactoryPostProcessors(ConfigurableListableBeanFactory beanFactory) {
+		// 1.获取beanFactoryPostProcessors属性——通过硬编码方式注册的bean工厂后处理器；
+		// 2.委托给代理，实现bean工厂后处理器的调用逻辑（激活bean工厂后处理器）。
 		PostProcessorRegistrationDelegate.invokeBeanFactoryPostProcessors(beanFactory, getBeanFactoryPostProcessors());
 
 		// Detect a LoadTimeWeaver and prepare for weaving, if found in the meantime
@@ -1048,6 +1078,11 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * @see #getBeanFactory()
 	 * @see org.springframework.beans.factory.config.ConfigurableBeanFactory#destroySingletons()
 	 */
+	/*
+	 * 1、模板方法，用于销毁该上下文管理的所有bean；
+	 * 2、默认实现会销毁该上下文中所有缓存的单例，调用DisposableBean.destroy()方法和/或指定的destroy-method；
+	 * 3、该方法可被覆盖，用来在标准单例销毁步骤之前或之后，且bean工厂仍处于激活状态时，让用户增加上下文特定的bean销毁步骤。
+	 */
 	protected void destroyBeans() {
 		getBeanFactory().destroySingletons();
 	}
@@ -1261,6 +1296,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * ConfigurableApplicationContext; else, return the parent context itself.
 	 * @see org.springframework.context.ConfigurableApplicationContext#getBeanFactory
 	 */
+	/*
+	 * 如果父上下文实现了ConfigurableApplicationContext接口，则返回父上下文内部的bean工厂；否则，返回父上下文本身。
+	 */
 	@Nullable
 	protected BeanFactory getInternalParentBeanFactory() {
 		return (getParent() instanceof ConfigurableApplicationContext) ?
@@ -1356,6 +1394,12 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * @throws BeansException if initialization of the bean factory failed
 	 * @throws IllegalStateException if already initialized and multiple refresh
 	 * attempts are not supported
+	 */
+	/*
+	 * 1.子类必须实现该方法来进行真正地配置加载；
+	 * 2.该方法被refresh()在任何其他初始化工作之前调用；
+	 * 3.子类要么创建一个新的bean工厂并持有它的引用、要么返回它持有的一个BeanFactory实例；
+	 * 4.在后一种情形下，如果刷新上下文超过一次，通常会抛出IllegalStateException。
 	 */
 	protected abstract void refreshBeanFactory() throws BeansException, IllegalStateException;
 

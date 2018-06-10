@@ -25,6 +25,9 @@ import org.springframework.util.Assert;
  * @author Juergen Hoeller
  * @since 3.0
  */
+/*
+ * 上下文对象，用于计算bean定义内的表达式。
+ */
 public class BeanExpressionContext {
 
 	private final ConfigurableBeanFactory beanFactory;

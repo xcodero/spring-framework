@@ -28,6 +28,11 @@ import org.springframework.lang.Nullable;
  * @author Juergen Hoeller
  * @since 2.5
  */
+/*
+ * 1.简单自动连线候选人解析器；
+ * 2.该实现仅检查bean定义；
+ * 3.当无需支持注解时，可使用它。
+ */
 public class SimpleAutowireCandidateResolver implements AutowireCandidateResolver {
 
 	@Override

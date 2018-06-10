@@ -55,6 +55,9 @@ public interface SingletonBeanRegistry {
 	 * @see org.springframework.beans.factory.DisposableBean#destroy
 	 * @see org.springframework.beans.factory.support.BeanDefinitionRegistry#registerBeanDefinition
 	 */
+	/*
+	 * 将给定的已存在对象作为单例向bean注册中心注册，注册到给定bean名称下面。
+	 */
 	void registerSingleton(String beanName, Object singletonObject);
 
 	/**

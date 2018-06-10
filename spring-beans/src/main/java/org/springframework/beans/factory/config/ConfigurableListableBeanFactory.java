@@ -39,6 +39,12 @@ import org.springframework.lang.Nullable;
  * @since 03.11.2003
  * @see org.springframework.context.support.AbstractApplicationContext#getBeanFactory()
  */
+/*
+ * 1.大部分能枚举出其所有bean实例的bean工厂实现了该配置接口；
+ * 2.除了ConfigurableBeanFactory，该接口提供分析和修改bean定义、预实例化单例的工具；
+ *
+ * 3.该BeanFactory的子接口并不打算用于常规的应用代码——典型地，使用BeanFactory、ListableBeanFactory两个接口。
+ */
 public interface ConfigurableListableBeanFactory
 		extends ListableBeanFactory, AutowireCapableBeanFactory, ConfigurableBeanFactory {
 
@@ -77,6 +83,9 @@ public interface ConfigurableListableBeanFactory
 	 * @param autowiredValue the corresponding autowired value. This may also be an
 	 * implementation of the {@link org.springframework.beans.factory.ObjectFactory}
 	 * interface, which allows for lazy resolution of the actual target value.
+	 */
+	/*
+	 * 为某个特殊的依赖类型注册自动连线的值。
 	 */
 	void registerResolvableDependency(Class<?> dependencyType, @Nullable Object autowiredValue);
 

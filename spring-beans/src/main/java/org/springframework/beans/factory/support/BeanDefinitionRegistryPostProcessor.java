@@ -30,6 +30,11 @@ import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
  * @since 3.0.1
  * @see org.springframework.context.annotation.ConfigurationClassPostProcessor
  */
+/*
+ * 1.该接口是标准BeanFactoryPostProcessor SPI的扩展接口；
+ * 2.用于在常规BeanFactoryPostProcessor的检测开始前先进行进一步的bean定义注册；
+ * 3.特别地，BeanDefinitionRegistryPostProcessor可能进一步注册bean定义，而该bean定义反过来定义了BeanFactoryPostProcessor实例。
+ */
 public interface BeanDefinitionRegistryPostProcessor extends BeanFactoryPostProcessor {
 
 	/**

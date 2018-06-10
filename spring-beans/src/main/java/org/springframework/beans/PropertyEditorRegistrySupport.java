@@ -142,25 +142,36 @@ public class PropertyEditorRegistrySupport implements PropertyEditorRegistry {
 	 * @return the default editor, or {@code null} if none found
 	 * @see #registerDefaultEditors
 	 */
+	/*
+	 * 1.如果有的话，为给定的属性类型获取默认的编辑器；
+	 * 2.如果默认编辑器被激活的话，则延迟注册默认的编辑器。
+	 */
 	@Nullable
 	public PropertyEditor getDefaultEditor(Class<?> requiredType) {
+		// 如果未激活默认编辑器，返回null
 		if (!this.defaultEditorsActive) {
 			return null;
 		}
+		// 如果Class实例对应的默认编辑器被覆盖，则返回用来覆盖的默认编辑器
 		if (this.overriddenDefaultEditors != null) {
 			PropertyEditor editor = this.overriddenDefaultEditors.get(requiredType);
 			if (editor != null) {
 				return editor;
 			}
 		}
+		// 懒创建常用的默认编辑器并注册
 		if (this.defaultEditors == null) {
 			createDefaultEditors();
 		}
+		// 如果有的话，返回Class实例对应的"常用"默认编辑器中；否则，返回null
 		return this.defaultEditors.get(requiredType);
 	}
 
 	/**
 	 * Actually register the default editors for this registry instance.
+	 */
+	/*
+	 * 真正为该注册处实例注册默认的编辑器。
 	 */
 	private void createDefaultEditors() {
 		this.defaultEditors = new HashMap<>(64);

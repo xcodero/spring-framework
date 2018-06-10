@@ -31,6 +31,10 @@ import org.springframework.lang.Nullable;
  * @author Juergen Hoeller
  * @since 3.0
  */
+/*
+ * 1.策略接口，通过将字符串当作表达式来计算从而解析它；
+ * 2.一个原生态的BeanFactory不包含该策略的默认实现，但ApplicationContext实现提供开箱即用的表达式支持。
+ */
 public interface BeanExpressionResolver {
 
 	/**

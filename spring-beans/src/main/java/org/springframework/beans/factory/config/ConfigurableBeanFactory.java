@@ -16,9 +16,6 @@
 
 package org.springframework.beans.factory.config;
 
-import java.beans.PropertyEditor;
-import java.security.AccessControlContext;
-
 import org.springframework.beans.PropertyEditorRegistrar;
 import org.springframework.beans.PropertyEditorRegistry;
 import org.springframework.beans.TypeConverter;
@@ -29,6 +26,9 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.lang.Nullable;
 import org.springframework.util.StringValueResolver;
+
+import java.beans.PropertyEditor;
+import java.security.AccessControlContext;
 
 /**
  * Configuration interface to be implemented by most bean factories. Provides
@@ -102,6 +102,12 @@ public interface ConfigurableBeanFactory extends HierarchicalBeanFactory, Single
 	 * classes are loaded as lazily as possible. The temporary loader is
 	 * then removed once the BeanFactory completes its bootstrap phase.
 	 * @since 2.5
+	 */
+	/*
+	 * 1.指定一个临时的ClassLoader用于类型匹配；
+	 * 2.默认没有，简单地使用标准的bean类加载器；
+	 * 3.通常只有涉及到加载时织入时才指定临时的ClassLoader，来保证真正的bean类尽可能延迟加载；
+	 * 4.一旦BeanFactory完成了引导阶段，临时的加载器就会被移除。
 	 */
 	void setTempClassLoader(@Nullable ClassLoader tempClassLoader);
 

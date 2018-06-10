@@ -30,8 +30,11 @@ package org.springframework.beans;
  * @see PropertyEditorRegistry
  * @see java.beans.PropertyEditor
  */
-// 1.属性编辑器注册员
-// 2.这是一个策略接口，用于想属性编辑器注册处注册自定义的属性编辑器
+/*
+ * 1.属性编辑器注册员；
+ * 2.这是一个策略接口，用于向属性编辑器注册处注册自定义的属性编辑器；
+ * 3.当你需要在多个不同场景下使用相同的属性编辑器集合时，该接口尤其有用——只需写一个注册员，然后复用它。
+ */
 public interface PropertyEditorRegistrar {
 
 	/**

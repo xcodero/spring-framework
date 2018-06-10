@@ -16,13 +16,6 @@
 
 package org.springframework.beans.factory.annotation;
 
-import java.lang.annotation.Annotation;
-import java.lang.reflect.AnnotatedElement;
-import java.lang.reflect.Method;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
-
 import org.springframework.beans.SimpleTypeConverter;
 import org.springframework.beans.TypeConverter;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -42,6 +35,13 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
+import java.lang.annotation.Annotation;
+import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Method;
+import java.util.LinkedHashSet;
+import java.util.Map;
+import java.util.Set;
+
 /**
  * {@link AutowireCandidateResolver} implementation that matches bean definition qualifiers
  * against {@link Qualifier qualifier annotations} on the field or parameter to be autowired.
@@ -56,6 +56,12 @@ import org.springframework.util.StringUtils;
  * @see AutowireCandidateQualifier
  * @see Qualifier
  * @see Value
+ */
+/*
+ * 1.限定符注解感知的自动连线候选人解析器；
+ * 2.该实现可使用自动连线域或参数的@Qualifier注解匹配bean定义的限定符；
+ * 3.也支持通过@Value注解暗示的表达式值；
+ * 4.也支持JSR-330的@javax.inject.Qualifier注解。
  */
 public class QualifierAnnotationAutowireCandidateResolver extends GenericTypeAwareAutowireCandidateResolver {
 
