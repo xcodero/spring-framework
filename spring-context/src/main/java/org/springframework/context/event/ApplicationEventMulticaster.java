@@ -33,6 +33,10 @@ import org.springframework.lang.Nullable;
  * @author Juergen Hoeller
  * @author Stephane Nicoll
  */
+/*
+ * 1.该接口用于管理若干ApplicationListener对象，并将事件发布给它们；
+ * 2.ApplicationEventPublisher（典型地，Spring的ApplicationContext）可委托给ApplicationEventMulticaster进行真正的事件发布。
+ */
 public interface ApplicationEventMulticaster {
 
 	/**

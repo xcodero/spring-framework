@@ -16,17 +16,16 @@
 
 package org.springframework.context.event;
 
-import java.util.concurrent.Executor;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.ResolvableType;
 import org.springframework.lang.Nullable;
 import org.springframework.util.ErrorHandler;
+
+import java.util.concurrent.Executor;
 
 /**
  * Simple implementation of the {@link ApplicationEventMulticaster} interface.
@@ -88,6 +87,9 @@ public class SimpleApplicationEventMulticaster extends AbstractApplicationEventM
 	/**
 	 * Return the current task executor for this multicaster.
 	 */
+	/*
+	 * 返回给广播器当前的任务执行器。
+	 */
 	@Nullable
 	protected Executor getTaskExecutor() {
 		return this.taskExecutor;
@@ -130,11 +132,14 @@ public class SimpleApplicationEventMulticaster extends AbstractApplicationEventM
 	@Override
 	public void multicastEvent(final ApplicationEvent event, @Nullable ResolvableType eventType) {
 		ResolvableType type = (eventType != null ? eventType : resolveDefaultEventType(event));
+		// 遍历匹配给定事件类型的ApplicationListener集合或所有的??
 		for (final ApplicationListener<?> listener : getApplicationListeners(event, type)) {
+			// 如果该广播器的任务执行器不为null，则异步执行invokeListener任务
 			Executor executor = getTaskExecutor();
 			if (executor != null) {
 				executor.execute(() -> invokeListener(listener, event));
 			}
+			// 否则，在调用者线程中执行invokeListener任务
 			else {
 				invokeListener(listener, event);
 			}
@@ -150,6 +155,9 @@ public class SimpleApplicationEventMulticaster extends AbstractApplicationEventM
 	 * @param listener the ApplicationListener to invoke
 	 * @param event the current event to propagate
 	 * @since 4.1
+	 */
+	/*
+	 * 将给定事件传播到给定的监听器。
 	 */
 	protected void invokeListener(ApplicationListener<?> listener, ApplicationEvent event) {
 		ErrorHandler errorHandler = getErrorHandler();

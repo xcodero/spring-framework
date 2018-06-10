@@ -760,11 +760,17 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * Initialize the MessageSource.
 	 * Use parent's if none defined in this context.
 	 */
+	/*
+	 * 1.初始化MessageSource；
+	 * 2.如果该上下文中没定义则使用父上下文中的MessageSource。
+	 */
 	protected void initMessageSource() {
 		ConfigurableListableBeanFactory beanFactory = getBeanFactory();
+		// 如果用户在配置文件中已经配置了名称为messageSource的bean，则提取该bean并记录到this.messageSource中
 		if (beanFactory.containsLocalBean(MESSAGE_SOURCE_BEAN_NAME)) {
 			this.messageSource = beanFactory.getBean(MESSAGE_SOURCE_BEAN_NAME, MessageSource.class);
 			// Make MessageSource aware of parent MessageSource.
+			// 设置MessageSource的parentMessageSource属性（让MessageSource感知到父MessageSource）
 			if (this.parent != null && this.messageSource instanceof HierarchicalMessageSource) {
 				HierarchicalMessageSource hms = (HierarchicalMessageSource) this.messageSource;
 				if (hms.getParentMessageSource() == null) {
@@ -777,11 +783,13 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				logger.debug("Using MessageSource [" + this.messageSource + "]");
 			}
 		}
+		// 如果用户没有在配置文件中配置名称为messageSource的bean，那么使用空MessageSource以便于能够接受getMessage方法的调用
 		else {
 			// Use empty MessageSource to be able to accept getMessage calls.
 			DelegatingMessageSource dms = new DelegatingMessageSource();
 			dms.setParentMessageSource(getInternalParentMessageSource());
 			this.messageSource = dms;
+			// 注册此处新建的DelegatingMessageSource单例bean
 			beanFactory.registerSingleton(MESSAGE_SOURCE_BEAN_NAME, this.messageSource);
 			if (logger.isDebugEnabled()) {
 				logger.debug("Unable to locate MessageSource with name '" + MESSAGE_SOURCE_BEAN_NAME +
@@ -795,8 +803,13 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * Uses SimpleApplicationEventMulticaster if none defined in the context.
 	 * @see org.springframework.context.event.SimpleApplicationEventMulticaster
 	 */
+	/*
+	 * 1.初始化ApplicationEventMulticaster；
+	 * 2.如果该上下文中没定义则使用SimpleApplicationEventMulticaster。
+	 */
 	protected void initApplicationEventMulticaster() {
 		ConfigurableListableBeanFactory beanFactory = getBeanFactory();
+		// 如果用户在配置文件中已经配置了名称为applicationEventMulticaster的bean，则提取该bean并记录到this.applicationEventMulticaster中
 		if (beanFactory.containsLocalBean(APPLICATION_EVENT_MULTICASTER_BEAN_NAME)) {
 			this.applicationEventMulticaster =
 					beanFactory.getBean(APPLICATION_EVENT_MULTICASTER_BEAN_NAME, ApplicationEventMulticaster.class);
@@ -804,8 +817,10 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 				logger.debug("Using ApplicationEventMulticaster [" + this.applicationEventMulticaster + "]");
 			}
 		}
+		// 如果用户没有在配置文件中配置名称为messageSource的bean，那么使用SimpleApplicationEventMulticaster对象
 		else {
 			this.applicationEventMulticaster = new SimpleApplicationEventMulticaster(beanFactory);
+			// 注册此处新建的SimpleApplicationEventMulticaster单例bean
 			beanFactory.registerSingleton(APPLICATION_EVENT_MULTICASTER_BEAN_NAME, this.applicationEventMulticaster);
 			if (logger.isDebugEnabled()) {
 				logger.debug("Unable to locate ApplicationEventMulticaster with name '" +
@@ -857,20 +872,27 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * Add beans that implement ApplicationListener as listeners.
 	 * Doesn't affect other listeners, which can be added without being beans.
 	 */
+	/*
+	 * 1.将实现了ApplicationListener的bean作为监听器添加进ApplicationEventMulticaster；
+	 * 2.不会影响其他监听器，可以不用成为bean就可添加进ApplicationEventMulticaster。
+	 */
 	protected void registerListeners() {
 		// Register statically specified listeners first.
+		// 1.注册硬编码方式指定的监听器
 		for (ApplicationListener<?> listener : getApplicationListeners()) {
 			getApplicationEventMulticaster().addApplicationListener(listener);
 		}
 
 		// Do not initialize FactoryBeans here: We need to leave all regular beans
 		// uninitialized to let post-processors apply to them!
+		// 2.注册配置文件方式指定的监听器（此处不要初始化FactoryBean——需要保持所有常规bean未初始化，这样可以让后处理器应用到这些bean上）
 		String[] listenerBeanNames = getBeanNamesForType(ApplicationListener.class, true, false);
 		for (String listenerBeanName : listenerBeanNames) {
 			getApplicationEventMulticaster().addApplicationListenerBean(listenerBeanName);
 		}
 
 		// Publish early application events now that we finally have a multicaster...
+		// 3.发布需要提早发布的应用事件
 		Set<ApplicationEvent> earlyEventsToProcess = this.earlyApplicationEvents;
 		this.earlyApplicationEvents = null;
 		if (earlyEventsToProcess != null) {
@@ -1313,6 +1335,8 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 
 	//---------------------------------------------------------------------
 	// Implementation of MessageSource interface
+	// 1.实现MessageSource接口定义的方法；
+	// 2.全部委托给this.messageSource域。
 	//---------------------------------------------------------------------
 
 	@Override
@@ -1335,6 +1359,10 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	 * @return the internal MessageSource (never {@code null})
 	 * @throws IllegalStateException if the context has not been initialized yet
 	 */
+	/*
+	 * 1.返回该上下文使用的内部MessageSource；
+	 * 2.该方法从不返回null；因为在initMessageSource方法中，如果用户未配置名称为messageSource的bean，Spring会使用DelegatingMessageSource。
+	 */
 	private MessageSource getMessageSource() throws IllegalStateException {
 		if (this.messageSource == null) {
 			throw new IllegalStateException("MessageSource not initialized - " +
@@ -1346,6 +1374,9 @@ public abstract class AbstractApplicationContext extends DefaultResourceLoader
 	/**
 	 * Return the internal message source of the parent context if it is an
 	 * AbstractApplicationContext too; else, return the parent context itself.
+	 */
+	/*
+	 * 如果父上下文也是一个AbstractApplicationContext，则返回父上下文的内部消息源；否则，返回父上下文本身。
 	 */
 	@Nullable
 	protected MessageSource getInternalParentMessageSource() {

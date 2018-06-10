@@ -49,13 +49,18 @@ public interface MessageSource {
 	 * @param code the code to lookup up, such as 'calculator.noRateSet'. Users of
 	 * this class are encouraged to base message names on the relevant fully
 	 * qualified class name, thus avoiding conflict and ensuring maximum clarity.
+	 *             要查找的消息码，如"calculator.noRateSet"。鼓励使用该接口的用户将消息名建立在相关的完全限定类名基础之上，这样可以避免冲突而且清楚；
 	 * @param args an array of arguments that will be filled in for params within
 	 * the message (params look like "{0}", "{1,date}", "{2,time}" within a message),
 	 * or {@code null} if none.
+	 *             用来填充消息内变量的参数数组（消息内的参数形如"{0}"、"{1,date}"），如果没有变量则传null；
 	 * @param defaultMessage a default message to return if the lookup fails
+	 *                       如果查找失败用于返回的默认消息
 	 * @param locale the locale in which to do the lookup
+	 *               在哪个本地化信息中进行查找
 	 * @return the resolved message if the lookup was successful;
 	 * otherwise the default message passed as a parameter
+	 * 如果查找成功，返回解析后的消息；否则，返回传入的默认消息
 	 * @see java.text.MessageFormat
 	 */
 	/*
