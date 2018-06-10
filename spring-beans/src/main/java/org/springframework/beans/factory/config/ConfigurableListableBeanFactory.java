@@ -141,6 +141,9 @@ public interface ConfigurableListableBeanFactory
 	 * @see #getBeanDefinition
 	 * @see #getMergedBeanDefinition
 	 */
+	/*
+	 * 	1.清除合并的bean定义缓存；
+	 */
 	void clearMetadataCache();
 
 	/**

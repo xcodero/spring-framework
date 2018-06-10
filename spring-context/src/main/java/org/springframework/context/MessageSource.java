@@ -16,9 +16,9 @@
 
 package org.springframework.context;
 
-import java.util.Locale;
-
 import org.springframework.lang.Nullable;
+
+import java.util.Locale;
 
 /**
  * Strategy interface for resolving messages, with support for the parameterization
@@ -37,6 +37,11 @@ import org.springframework.lang.Nullable;
  * @see org.springframework.context.support.ResourceBundleMessageSource
  * @see org.springframework.context.support.ReloadableResourceBundleMessageSource
  */
+/*
+ * 1.用于解析消息的的策略接口，支持参数化和国际化这样的消息；
+ * 2.Spring提供了2个开箱即用的实现：ResourceBundleMessageSource和ReloadableResourceBundleMessageSource；
+ * 3.前者建立在ResourceBundle基础上，后者可以在不重启VM的情况下重新加载消息定义。
+ */
 public interface MessageSource {
 
 	/**
@@ -53,6 +58,9 @@ public interface MessageSource {
 	 * otherwise the default message passed as a parameter
 	 * @see java.text.MessageFormat
 	 */
+	/*
+	 * 尝试解析消息，如果没找到则返回默认消息。
+	 */
 	@Nullable
 	String getMessage(String code, @Nullable Object[] args, @Nullable String defaultMessage, Locale locale);
 
@@ -67,6 +75,9 @@ public interface MessageSource {
 	 * @throws NoSuchMessageException if the message wasn't found
 	 * @see java.text.MessageFormat
 	 */
+	/*
+	 * 尝试解析消息，如果没找到抛出异常。
+	 */
 	String getMessage(String code, @Nullable Object[] args, Locale locale) throws NoSuchMessageException;
 
 	/**
@@ -80,6 +91,9 @@ public interface MessageSource {
 	 * @return the resolved message
 	 * @throws NoSuchMessageException if the message wasn't found
 	 * @see java.text.MessageFormat
+	 */
+	/*
+	 * 尝试使用传入的MessageSourceResolvable参数中包含的属性来解析消息。
 	 */
 	String getMessage(MessageSourceResolvable resolvable, Locale locale) throws NoSuchMessageException;
 
